@@ -1,4 +1,4 @@
-package com.task01;
+package com.task02;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -11,10 +11,12 @@ import java.util.Map;
 @LambdaHandler(
     lambdaName = "hello_world",
 	roleName = "hello_world-role",
-	isPublishVersion = true,
-	aliasName = "${lambdas_alias_name}",
+	isPublishVersion = false,
 	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
+@LambdaUrlConfig{
+	authType = AuthType.None
+		}
 public class HelloWorld implements RequestHandler<Object, Map<String, Object>> {
 
 	public Map<String, Object> handleRequest(Object request, Context context) {
