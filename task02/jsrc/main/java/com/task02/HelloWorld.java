@@ -12,6 +12,7 @@ import com.syndicate.deployment.model.RetentionSetting;
 import com.syndicate.deployment.model.lambda.url.AuthType;
 import com.syndicate.deployment.model.lambda.url.InvokeMode;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,19 +26,35 @@ import java.util.Map;
 @LambdaUrlConfig(
 		authType = AuthType.NONE
 )
-public class HelloWorld implements RequestHandler<Object, Map<String, Object>> {
+public class HelloWorld implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-	public Map<String, Object> handleRequest(Object request, Context context) {
-		System.out.println("Hello from lambda");
-		Map<String, Object> resultMap = new HashMap<String, Object>();
-		if (request.toString().contains("/hello")) {
-		resultMap.put("statusCode:", 200);
-		resultMap.put("message", "Hello from Lambda");
+	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
+		String path = event.getPath();
+		String httpMethod = event.getHttpMethod();
+
+
+		if ("/hello".equals(path) && "GET".equals(httpMethod)) {
+			// Handle /hello GET request
+			Map<String, String> headers = new HashMap<>();
+			headers.put("Content-Type", "application/json");
+
+			APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent()
+                    .withStatusCode(200)
+					.withHeaders(headers)
+					.withBody("{\"statusCode\": 200, \"message\": \"Hello from Lambda\"}");
+			return response;
 		} else {
-			resultMap.put("statusCode", 400);
-			resultMap.put("message", "Bad request syntax or unsupported method. Request path: {path}. HTTP method: {method}");
-		}
+			// Handle other requests
+			Map<String, String> headers = new HashMap<>();
+			headers.put("Content-Type", "application/json");
 
-		return resultMap;
+			String errorMessage = String.format("Bad request syntax or unsupported method. Request path: %s. HTTP method: %s", path, httpMethod);
+
+			APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent()
+					.withStatusCode(400)
+					.withHeaders(headers)
+					.withBody("{\"statusCode\": 400, \"message\": \"" + errorMessage + "\"}");
+			return response;
+		}
 	}
 }
