@@ -44,7 +44,7 @@ public class HelloWorld implements RequestHandler<APIGatewayProxyRequestEvent, A
 		headers.put("Content-Type", "application/json");
 
 		// Handle /hello GET request
-		if (event.getPath().contains("hello")) {
+		if (event.getResource().contains("hello")) {
 			APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent()
 					.withStatusCode(200)
 					.withHeaders(headers)
