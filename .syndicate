@@ -1,0 +1,24 @@
+name: demo
+events:
+- operation: assemble
+  initiator: boris
+  bundle_name: demo_240731.222914
+  time_start: '2024-07-31T22:29:15Z'
+  time_end: '2024-07-31T22:29:15Z'
+  duration_sec: 0.002
+- operation: test
+  initiator: boris
+  time_start: '2024-07-31T22:29:15Z'
+  time_end: '2024-07-31T22:29:15Z'
+  duration_sec: 0.002
+- operation: assemble
+  initiator: boris
+  bundle_name: demo_240731.222855
+  time_start: '2024-07-31T22:28:56Z'
+  time_end: '2024-07-31T22:28:56Z'
+  duration_sec: 0.001
+- operation: test
+  initiator: boris
+  time_start: '2024-07-31T22:28:56Z'
+  time_end: '2024-07-31T22:28:56Z'
+  duration_sec: 0.001
