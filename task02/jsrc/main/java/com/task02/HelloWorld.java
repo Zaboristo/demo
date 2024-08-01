@@ -11,6 +11,7 @@ import com.syndicate.deployment.model.DeploymentRuntime;
 import com.syndicate.deployment.model.RetentionSetting;
 import com.syndicate.deployment.model.lambda.url.AuthType;
 import com.syndicate.deployment.model.lambda.url.InvokeMode;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +31,7 @@ public class HelloWorld implements RequestHandler<Object, Map<String, Object>> {
 		System.out.println("Hello from lambda");
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		if (request.toString().contains("/hello")) {
-		resultMap.put("statusCode", 200);
+		resultMap.put("statusCode:", 200);
 		resultMap.put("message", "Hello from Lambda");
 		} else {
 			resultMap.put("statusCode", 400);
