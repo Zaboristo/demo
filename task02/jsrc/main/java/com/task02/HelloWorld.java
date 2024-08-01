@@ -29,8 +29,8 @@ public class HelloWorld implements RequestHandler<APIGatewayProxyRequestEvent, A
 
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
-        if (path.contains("\\hello")
-        || resource.contains("\\hello")) {
+        if (path.contains("/hello")
+        || resource.contains("/hello")) {
             APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent()
                     .withStatusCode(200)
                     .withHeaders(headers)
