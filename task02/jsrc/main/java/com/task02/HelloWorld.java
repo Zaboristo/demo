@@ -32,13 +32,13 @@ public class HelloWorld implements RequestHandler<APIGatewayProxyRequestEvent, A
 		String path = event.getPath();
 		String httpMethod = event.getHttpMethod();
 
-
+		// Handle /hello GET request
 		if ("/hello".equals(path) && "GET".equals(httpMethod)) {
-			// Handle /hello GET request
 			Map<String, String> headers = new HashMap<>();
 			headers.put("Content-Type", "application/json");
 
 			APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent()
+
                     .withStatusCode(200)
 					.withHeaders(headers)
 					.withBody("{\"statusCode\": 200, \"message\": \"Hello from Lambda\"}");
