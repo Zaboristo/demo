@@ -29,7 +29,7 @@ import java.util.Map;
 public class HelloWorld implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
 	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
-		String path = event.getPath();
+		String path = event.getPath() == null ? "" : event.getPath();
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type", "application/json");
 
