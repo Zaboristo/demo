@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @LambdaHandler(
-    lambdaName = "task3_api",
+    lambdaName = "hello_world",
 	roleName = "hello_world-role",
 	isPublishVersion = false,
 	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
