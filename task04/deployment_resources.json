@@ -41,7 +41,7 @@
     "event_sources": [
       {
         "resource_type": "sqs_event",
-        "queue_name": "demo-sqs-queue"
+        "queue_name": "async_queue"
       }
     ],
     "resource_type": "iam_role"
