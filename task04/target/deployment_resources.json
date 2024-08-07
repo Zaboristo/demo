@@ -31,38 +31,5 @@
       "auth_type" : "NONE",
       "invoke_mode" : "BUFFERED"
     }
-  },
-  "hello_world" : {
-    "name" : "hello_world",
-    "lambda_path" : "C:\\Users\\boris\\Documents\\IdeaProjects\\demo\\task04",
-    "version" : "1.0.0",
-    "func_name" : "com.task04.HelloWorld",
-    "deployment_package" : "task04-1.0.0.jar",
-    "resource_type" : "lambda",
-    "runtime" : "java11",
-    "architectures" : [ "x86_64" ],
-    "iam_role_name" : "hello_world-role",
-    "memory" : 1024,
-    "timeout" : 300,
-    "subnet_ids" : [ ],
-    "security_group_ids" : [ ],
-    "dependencies" : [ {
-      "resource_name" : "async_queue",
-      "resource_type" : "sqs_queue"
-    } ],
-    "event_sources" : [ {
-      "resource_type" : "sqs_trigger",
-      "target_queue" : "async_queue",
-      "batch_size" : 123,
-      "function_response_types" : [ "ReportBatchItemFailures" ]
-    } ],
-    "env_variables" : { },
-    "publish_version" : false,
-    "logs_expiration" : "${logs_expiration}",
-    "snap_start" : "None",
-    "url_config" : {
-      "auth_type" : "NONE",
-      "invoke_mode" : "BUFFERED"
-    }
   }
 }
