@@ -38,6 +38,7 @@
     "custom_policies": [
       "lambda-basic-execution"
     ],
+    "timeout": 30,
     "event_sources" : {
       "resource_type": "async_queue",
       "target_queue": "string",

@@ -25,7 +25,6 @@ functionResponseTypes = FunctionResponseType.REPORT_BATCH_ITEM_FAILURES)
 @DependsOn(name = "async_queue",
 resourceType = ResourceType.SQS_QUEUE)
 public class SqsHandler implements RequestHandler<SQSEvent, Void> {
-
 	public Void handleRequest(SQSEvent event, Context context) {
 		event.getRecords().forEach(record -> {
 			context.getLogger().log("SQS Message: " + record.getBody());
