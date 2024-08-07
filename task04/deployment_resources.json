@@ -18,7 +18,8 @@
             "ssm:PutParameter",
             "ssm:GetParameter",
             "kms:Decrypt",
-            "lambda:*"
+            "lambda:*",
+            "sns:*"
           ],
           "Effect": "Allow",
           "Resource": "*"
@@ -35,12 +36,14 @@
       "lambda-basic-execution"
     ],
     "timeout": 30,
-    "event_sources" : {
+    "event_sources": {
       "resource_type": "async_queue",
       "target_queue": "string",
       "batch_size": 10,
       "batch_window": 10,
-      "function_response_types": ["ReportBatchItemFailures"]
+      "function_response_types": [
+        "ReportBatchItemFailures"
+      ]
     },
     "resource_type": "iam_role"
   },
@@ -55,5 +58,23 @@
     "policy": {},
     "redrive_policy": {},
     "content_based_deduplication": false
+  },
+  "sns_handler-role": {
+    "predefined_policies": [],
+    "principal_service": "lambda",
+    "custom_policies": [
+      "lambda-basic-execution"
+    ],
+    "event_sources": {
+      "resource_type": "sns_topic_trigger",
+      "target_topic": "lambda_topic",
+      "region": "eu-central-1"
+    },
+    "resource_type": "iam_role"
+  },
+  "lambda_topic": {
+    "resource_type": "sns_topic",
+    "region": "eu-central-1",
+    "event_sources": []
   }
 }
