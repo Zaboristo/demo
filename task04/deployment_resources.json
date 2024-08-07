@@ -40,28 +40,23 @@
     ],
     "event_sources": [
       {
-        "resource_type": "sqs_event",
-        "queue_name": "async_queue"
+        "resource_type": "sqs_trigger",
+        "target_queue": "async_queue",
+        "batch_size": 123
       }
     ],
     "resource_type": "iam_role"
   },
   "async_queue": {
     "resource_type": "sqs_queue",
-    "fifo_queue": false,
-    "visibility_timeout": 30,
+    "fifo_queue": true,
+    "visibility_timeout": 300,
     "delay_seconds": 0,
     "maximum_message_size": 1024,
     "message_retention_period": 60,
     "receive_message_wait_time_seconds": 0,
     "policy": {},
     "redrive_policy": {},
-    "content_based_deduplication": false,
-    "event_sources": [
-      {
-        "target_rule": "sqs_handler-role",
-        "resource_type": "cloudwatch_rule_trigger"
-      }
-    ]
+    "content_based_deduplication": false
   }
 }
