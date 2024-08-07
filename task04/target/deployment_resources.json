@@ -26,7 +26,11 @@
     "env_variables" : { },
     "publish_version" : false,
     "logs_expiration" : "${logs_expiration}",
-    "snap_start" : "None"
+    "snap_start" : "None",
+    "url_config" : {
+      "auth_type" : "NONE",
+      "invoke_mode" : "BUFFERED"
+    }
   },
   "hello_world" : {
     "name" : "hello_world",
@@ -42,11 +46,23 @@
     "timeout" : 300,
     "subnet_ids" : [ ],
     "security_group_ids" : [ ],
-    "dependencies" : [ ],
-    "event_sources" : [ ],
+    "dependencies" : [ {
+      "resource_name" : "async_queue",
+      "resource_type" : "sqs_queue"
+    } ],
+    "event_sources" : [ {
+      "resource_type" : "sqs_trigger",
+      "target_queue" : "async_queue",
+      "batch_size" : 123,
+      "function_response_types" : [ "ReportBatchItemFailures" ]
+    } ],
     "env_variables" : { },
     "publish_version" : false,
     "logs_expiration" : "${logs_expiration}",
-    "snap_start" : "None"
+    "snap_start" : "None",
+    "url_config" : {
+      "auth_type" : "NONE",
+      "invoke_mode" : "BUFFERED"
+    }
   }
 }
