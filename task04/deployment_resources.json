@@ -59,7 +59,7 @@
     "content_based_deduplication": false,
     "event_sources": [
       {
-        "target_rule": "SQSHandlerRule",
+        "target_rule": "sqs_handler-role",
         "resource_type": "cloudwatch_rule_trigger"
       }
     ]

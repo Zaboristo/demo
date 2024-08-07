@@ -11,9 +11,8 @@ import java.util.Map;
 
 @LambdaHandler(
     lambdaName = "sqs_handler",
-	roleName = "SQSHandler-role",
-	isPublishVersion = true,
-	aliasName = "${lambdas_alias_name}",
+	roleName = "sqs_handler-role",
+	isPublishVersion = false,
 	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
 public class Sqshandler implements RequestHandler<SQSEvent, Void> {

@@ -8,7 +8,7 @@
     "resource_type" : "lambda",
     "runtime" : "java11",
     "architectures" : [ "x86_64" ],
-    "iam_role_name" : "SQSHandler-role",
+    "iam_role_name" : "sqs_handler-role",
     "memory" : 1024,
     "timeout" : 300,
     "subnet_ids" : [ ],
@@ -16,8 +16,7 @@
     "dependencies" : [ ],
     "event_sources" : [ ],
     "env_variables" : { },
-    "publish_version" : true,
-    "alias" : "${lambdas_alias_name}",
+    "publish_version" : false,
     "logs_expiration" : "${logs_expiration}",
     "snap_start" : "None"
   },
@@ -38,8 +37,7 @@
     "dependencies" : [ ],
     "event_sources" : [ ],
     "env_variables" : { },
-    "publish_version" : true,
-    "alias" : "${lambdas_alias_name}",
+    "publish_version" : false,
     "logs_expiration" : "${logs_expiration}",
     "snap_start" : "None"
   }
