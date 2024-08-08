@@ -65,7 +65,7 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
 				}
 
 				PutItemRequest putItemRequest = PutItemRequest.builder()
-						.tableName("Audit")
+						.tableName("cmtr-b301d41c-Audit-test")
 						.item(auditItem)
 						.build();
 
