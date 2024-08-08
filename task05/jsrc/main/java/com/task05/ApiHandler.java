@@ -18,6 +18,7 @@ import com.syndicate.deployment.model.lambda.url.AuthType;
 
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -46,6 +47,7 @@ public class ApiHandler implements RequestHandler<Map<String, Object>, Map<Strin
 
 	@Override
 	public Map<String, Object> handleRequest(Map<String, Object> input, Context context) {
+		Map<String, Object> response = new HashMap<>();
 		try {
 			// Generate a UUID for the event
 			String id = UUID.randomUUID().toString();
@@ -55,30 +57,34 @@ public class ApiHandler implements RequestHandler<Map<String, Object>, Map<Strin
 			Map<String, String> content = (Map<String, String>) input.get("content");
 
 			// Create the event item to be saved in DynamoDB
+			String createdAt = Instant.now().toString();
 			Item item = new Item()
 					.withPrimaryKey("id", id)
 					.withNumber("principalId", principalId)
-					.withString("createdAt", Instant.now().toString())
+					.withString("createdAt", createdAt)
 					.withMap("body", content);
 
 			// Save the event to the DynamoDB table
 			Table table = dynamoDB.getTable(TABLE_NAME);
 			table.putItem(item);
 
-			// Create the response object
-			Map<String, Object> response = Map.of(
-					"statusCode", 201,
-					"event", item.asMap()
-			);
+			// Create the event map for the response
+			Map<String, Object> event = new HashMap<>();
+			event.put("id", id);
+			event.put("principalId", principalId);
+			event.put("createdAt", createdAt);
+			event.put("body", content);
 
-			return response;
+			// Create the response object
+			response.put("statusCode", 201);
+			response.put("event", event);
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return Map.of(
-					"statusCode", 500,
-					"error", "Internal Server Error"
-			);
+			response.put("statusCode", 500);
+			response.put("error", "Internal Server Error");
 		}
+
+		return response;
 	}
 }
