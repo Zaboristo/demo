@@ -45,36 +45,23 @@ public class ApiHandler implements RequestHandler<Map<String, Object>, Map<Strin
 		Map<String, Object> response = new HashMap<>();
 		try {
 
-			input = (Map<String, Object>)input.get("body");
-			// Generate a UUID for the event
-			String id = UUID.randomUUID().toString();
-
-			// Extract the principalId and content from the input
 			int principalId = (int) input.get("principalId");
 			Map<String, String> content = (Map<String, String>) input.get("content");
 
-			// Create the event item to be saved in DynamoDB
+			Event event = new Event(principalId, content);
+
 			String createdAt = Instant.now().toString();
 			Item item = new Item()
-					.withPrimaryKey("id", id)
-					.withNumber("principalId", principalId)
-					.withString("createdAt", createdAt)
-					.withMap("body", content);
+					.withPrimaryKey("id", event.getId())
+					.withNumber("principalId", event.getPrincipalId())
+					.withString("createdAt", event.getCreatedAt())
+					.withMap("body", event.getBody());
 
-			// Save the event to the DynamoDB table
 			Table table = dynamoDB.getTable(TABLE_NAME);
 			table.putItem(item);
 
-			// Create the event map for the response
-//			Map<String, Object> event = new HashMap<>();
-//			event.put("id", id);
-//			event.put("principalId", principalId);
-//			event.put("createdAt", createdAt);
-//			event.put("body", content);
-
-			// Create the response object
 			response.put("statusCode", 201);
-			response.put("event", item);
+			response.put("event", item.toJSON());
 
 		} catch (Exception e) {
 			e.printStackTrace();

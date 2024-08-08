@@ -19,7 +19,6 @@ public class Event {
         this.body = body;
     }
 
-    // Getters and setters
     public String getId() {
         return id;
     }

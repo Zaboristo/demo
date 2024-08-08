@@ -54,8 +54,8 @@
     "resource_type": "dynamodb_table",
     "hash_key_name": "id",
     "hash_key_type": "S",
-    "read_capacity": 5,
-    "write_capacity": 5,
+    "read_capacity": 10,
+    "write_capacity": 10,
     "global_indexes": [],
     "autoscaling": []
   }
