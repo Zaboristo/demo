@@ -14,6 +14,7 @@ import com.syndicate.deployment.annotations.resources.DependsOn;
 import com.syndicate.deployment.model.ResourceType;
 import com.syndicate.deployment.model.RetentionSetting;
 import com.syndicate.deployment.model.lambda.url.AuthType;
+import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
@@ -43,6 +44,7 @@ public class ApiHandler implements RequestHandler<Map<String, Object>, Map<Strin
 		try {
 			int principalId = Integer.parseInt(event.get("principalId").toString());
 			Map<String, String> content = (Map<String, String>) event.get("content");
+			Map<String, AttributeValue> contentAtt = (Map<String, AttributeValue>) event.get("content");
 
 			String eventId = UUID.randomUUID().toString();
 			Instant now = Instant.now();
@@ -52,7 +54,7 @@ public class ApiHandler implements RequestHandler<Map<String, Object>, Map<Strin
 			item.put("id", new AttributeValue().withS(eventId));
 			item.put("principalId", new AttributeValue().withN(Integer.toString(principalId)));
 			item.put("createdAt", new AttributeValue().withS(createdAt));
-			item.put("body", new AttributeValue().withM(objectMapper.convertValue(content, Map.class)));
+			item.put("body", new AttributeValue().withM(contentAtt));
 
 			PutItemRequest putItemRequest = new PutItemRequest()
 					.withTableName(TABLE_NAME)
@@ -64,7 +66,7 @@ public class ApiHandler implements RequestHandler<Map<String, Object>, Map<Strin
 			response.put("statusCode", 201);
 			response.put("event", item);
 			return response;
-		} catch (Exception e) {
+		} catch (DynamoDbException e) {
 			// Handle exceptions
 			e.printStackTrace();
 			return Map.of("statusCode", 500, "error", e.getMessage());
