@@ -61,7 +61,7 @@ public class ApiHandler implements RequestHandler<Map<String, Object>, Map<Strin
 			table.putItem(item);
 
 			response.put("statusCode", 201);
-			response.put("event", item.toJSON());
+			response.put("event", item);
 
 		} catch (Exception e) {
 			e.printStackTrace();
