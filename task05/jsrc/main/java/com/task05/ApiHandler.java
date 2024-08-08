@@ -2,9 +2,9 @@ package com.task05;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import com.amazonaws.services.dynamodbv2.document.Item;
-import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
+import com.amazonaws.services.dynamodbv2.model.PutItemResult;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,9 +15,8 @@ import com.syndicate.deployment.model.ResourceType;
 import com.syndicate.deployment.model.RetentionSetting;
 import com.syndicate.deployment.model.lambda.url.AuthType;
 
-
-
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -35,56 +34,40 @@ import java.util.UUID;
 		resourceType = ResourceType.DYNAMODB_TABLE)
 public class ApiHandler implements RequestHandler<Map<String, Object>, Map<String, Object>> {
 
+	private static final AmazonDynamoDB dynamoDB = AmazonDynamoDBClientBuilder.standard().build();
 	private static final String TABLE_NAME = "Events";
-	private final DynamoDB dynamoDB;
-	private final ObjectMapper objectMapper;
-
-	public ApiHandler() {
-		AmazonDynamoDB client = AmazonDynamoDBClientBuilder.defaultClient();
-		this.dynamoDB = new DynamoDB(client);
-		this.objectMapper = new ObjectMapper();
-	}
+	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	@Override
-	public Map<String, Object> handleRequest(Map<String, Object> input, Context context) {
-		Map<String, Object> response = new HashMap<>();
+	public Map<String, Object> handleRequest(Map<String, Object> event, Context context) {
 		try {
-			// Generate a UUID for the event
-			String id = UUID.randomUUID().toString();
+			int principalId = Integer.parseInt(event.get("principalId").toString());
+			Map<String, String> content = (Map<String, String>) event.get("content");
 
-			// Extract the principalId and content from the input
-			int principalId = (int) input.get("principalId");
-			Map<String, String> content = (Map<String, String>) input.get("content");
+			String eventId = UUID.randomUUID().toString();
+			Instant now = Instant.now();
+			String createdAt = DateTimeFormatter.ISO_INSTANT.format(now);
 
-			// Create the event item to be saved in DynamoDB
-			String createdAt = Instant.now().toString();
-			Item item = new Item()
-					.withPrimaryKey("id", id)
-					.withNumber("principalId", principalId)
-					.withString("createdAt", createdAt)
-					.withMap("body", content);
+			Map<String, AttributeValue> item = new HashMap<>();
+			item.put("id", new AttributeValue().withS(eventId));
+			item.put("principalId", new AttributeValue().withN(Integer.toString(principalId)));
+			item.put("createdAt", new AttributeValue().withS(createdAt));
+			item.put("body", new AttributeValue().withM(objectMapper.convertValue(content, Map.class)));
 
-			// Save the event to the DynamoDB table
-			Table table = dynamoDB.getTable(TABLE_NAME);
-			table.putItem(item);
+			PutItemRequest putItemRequest = new PutItemRequest()
+					.withTableName(TABLE_NAME)
+					.withItem(item);
 
-			// Create the event map for the response
-			Map<String, Object> event = new HashMap<>();
-			event.put("id", id);
-			event.put("principalId", principalId);
-			event.put("createdAt", createdAt);
-			event.put("body", content);
+			PutItemResult putItemResult = dynamoDB.putItem(putItemRequest);
 
-			// Create the response object
+			Map<String, Object> response = new HashMap<>();
 			response.put("statusCode", 201);
-			response.put("event", event);
-
+			response.put("event", item);
+			return response;
 		} catch (Exception e) {
+			// Handle exceptions
 			e.printStackTrace();
-			response.put("statusCode", 500);
-			response.put("error", "Internal Server Error");
+			return Map.of("statusCode", 500, "error", e.getMessage());
 		}
-
-		return response;
 	}
 }
