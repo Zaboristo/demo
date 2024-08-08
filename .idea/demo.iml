@@ -15,5 +15,14 @@
     <orderEntry type="library" name="Maven: net.sf.aws-syndicate:deployment-configuration-annotations:1.13.0" level="project" />
     <orderEntry type="library" name="Maven: com.amazonaws:aws-lambda-java-events:3.11.4" level="project" />
     <orderEntry type="library" name="Maven: com.amazonaws:aws-lambda-java-core:1.2.0" level="project" />
+    <orderEntry type="library" name="Maven: com.amazonaws:aws-java-sdk-dynamodb:1.12.767" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.uuid:java-uuid-generator:4.0.1" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.16.1" level="project" />
+    <orderEntry type="library" name="Maven: software.amazon.awssdk:dynamodb:2.20.36" level="project" />
+    <orderEntry type="library" name="Maven: software.amazon.awssdk:dynamodb:2.26.30" level="project" />
+    <orderEntry type="library" name="Maven: software.amazon.awssdk:aws-core:2.26.30" level="project" />
+    <orderEntry type="library" name="Maven: software.amazon.awssdk:sdk-core:2.26.30" level="project" />
+    <orderEntry type="library" name="Maven: software.amazon.awssdk:utils:2.26.30" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.16.1" level="project" />
   </component>
 </module>

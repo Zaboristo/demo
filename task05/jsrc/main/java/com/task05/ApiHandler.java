@@ -1,21 +1,19 @@
 package com.task05;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import com.amazonaws.services.dynamodbv2.document.Table;
-import com.amazonaws.services.dynamodbv2.document.PutItemOutcome;
-import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.fasterxml.uuid.Generators;
-import com.fasterxml.uuid.impl.TimeBasedGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.syndicate.deployment.annotations.lambda.LambdaHandler;
+import com.syndicate.deployment.annotations.lambda.LambdaUrlConfig;
+import com.syndicate.deployment.annotations.resources.DependsOn;
+import com.syndicate.deployment.model.ResourceType;
 import com.syndicate.deployment.model.RetentionSetting;
+import com.syndicate.deployment.model.lambda.url.AuthType;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 
-import java.time.Instant;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,54 +23,69 @@ import java.util.Map;
 	isPublishVersion = false,
 	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
-public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+@LambdaUrlConfig(
+		authType = AuthType.NONE
+)
+@DependsOn(name = "Events",
+		resourceType = ResourceType.DYNAMODB_TABLE)
+public class ApiHandler implements RequestHandler<Map<String, Object>, Map<String, Object>> {
 
-	private final DynamoDB dynamoDB;
-	private final Table table;
-	private final TimeBasedGenerator uuidGenerator;
+	private final DynamoDbClient dynamoDbClient;
+	private final ObjectMapper objectMapper;
 
 	public ApiHandler() {
-		AmazonDynamoDB client = AmazonDynamoDBClientBuilder.defaultClient();
-		this.dynamoDB = new DynamoDB(client);
-		this.table = dynamoDB.getTable("Events");
-		this.uuidGenerator = Generators.timeBasedGenerator();
+		this.dynamoDbClient =  DynamoDbClient.create();
+		this.objectMapper = new ObjectMapper();
 	}
 
 	@Override
-	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request, Context context) {
-		Map<String, Object> requestBody = parseRequestBody(request.getBody());
-		String principalId = (String) requestBody.get("principalId");
-		Map<String, String> content = (Map<String, String>) requestBody.get("content");
+	public Map<String, Object> handleRequest(Map<String, Object> input, Context context) {
+		try {
+			// Parse input
+			Map<String, Object> body = objectMapper.readValue((String) input.get("body"), Map.class);
+			int principalId = (Integer) body.get("principalId");
+			Map<String, String> content = (Map<String, String>) body.get("content");
 
-		String eventId = uuidGenerator.generate().toString();
-		String createdAt = Instant.now().toString();
+			// Create event
+			Event event = new Event(principalId, content);
 
-		Item item = new Item()
-				.withPrimaryKey("id", eventId)
-				.withNumber("principalId", Integer.parseInt(principalId))
-				.withString("createdAt", createdAt)
-				.withMap("body", content);
+			// Save event to DynamoDB
+			Map<String, AttributeValue> item = new HashMap<>();
+			item.put("id", AttributeValue.builder().s(event.getId()).build());
+			item.put("principalId", AttributeValue.builder().n(String.valueOf(event.getPrincipalId())).build());
+			item.put("createdAt", AttributeValue.builder().s(event.getCreatedAt()).build());
+			item.put("body", AttributeValue.builder().m(convertMap(content)).build());
 
-		PutItemOutcome outcome = table.putItem(item);
+			PutItemRequest request = PutItemRequest.builder()
+					.tableName("Events")
+					.item(item)
+					.build();
 
-		Map<String, Object> responseBody = new HashMap<>();
-		responseBody.put("statusCode", 201);
-		responseBody.put("event", item.asMap());
+			dynamoDbClient.putItem(request);
 
-		APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
-		response.setStatusCode(201);
-		response.setBody(serializeResponseBody(responseBody));
+			// Prepare response
+			Map<String, Object> responseBody = new HashMap<>();
+			responseBody.put("statusCode", 201);
+			responseBody.put("event", event);
 
-		return response;
+			return responseBody;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			// Prepare error response
+			Map<String, Object> errorResponse = new HashMap<>();
+			errorResponse.put("statusCode", 500);
+			errorResponse.put("error", e.getMessage());
+			return errorResponse;
+		}
 	}
 
-	private Map<String, Object> parseRequestBody(String body) {
-		// Implement your JSON parsing logic here
-		return new HashMap<>();
-	}
-
-	private String serializeResponseBody(Map<String, Object> body) {
-		// Implement your JSON serialization logic here
-		return "";
+	private Map<String, AttributeValue> convertMap(Map<String, String> map) {
+		Map<String, AttributeValue> result = new HashMap<>();
+		for (Map.Entry<String, String> entry : map.entrySet()) {
+			result.put(entry.getKey(), AttributeValue.builder().s(entry.getValue()).build());
+		}
+		return result;
 	}
 }
