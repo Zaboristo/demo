@@ -36,7 +36,7 @@ public class ApiHandler implements RequestHandler<Map<String, Object>, Map<Strin
 	private final DynamoDB dynamoDB;
 
 	public ApiHandler() {
-		AmazonDynamoDB client = AmazonDynamoDBClientBuilder.defaultClient();
+		AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withRegion("eu-central-1").build();
 		this.dynamoDB = new DynamoDB(client);
 	}
 
@@ -64,15 +64,15 @@ public class ApiHandler implements RequestHandler<Map<String, Object>, Map<Strin
 			table.putItem(item);
 
 			// Create the event map for the response
-			Map<String, Object> event = new HashMap<>();
-			event.put("id", id);
-			event.put("principalId", principalId);
-			event.put("createdAt", createdAt);
-			event.put("body", content);
+//			Map<String, Object> event = new HashMap<>();
+//			event.put("id", id);
+//			event.put("principalId", principalId);
+//			event.put("createdAt", createdAt);
+//			event.put("body", content);
 
 			// Create the response object
 			response.put("statusCode", 201);
-			response.put("event", event);
+			response.put("event", item);
 
 		} catch (Exception e) {
 			e.printStackTrace();
