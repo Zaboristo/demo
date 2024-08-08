@@ -57,7 +57,7 @@ public class ApiHandler implements RequestHandler<Map<String, Object>, Map<Strin
 					.withString("createdAt", event.getCreatedAt())
 					.withMap("body", event.getBody());
 
-			Table table = dynamoDB.getTable(TABLE_NAME);
+			Table table = dynamoDB.getTable("cmtr-b301d41c-" + TABLE_NAME);
 			table.putItem(item);
 
 			response.put("statusCode", 201);
