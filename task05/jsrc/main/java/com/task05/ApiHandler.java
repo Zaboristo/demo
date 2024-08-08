@@ -2,22 +2,19 @@ package com.task05;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
-import com.amazonaws.services.dynamodbv2.model.PutItemResult;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.syndicate.deployment.annotations.lambda.LambdaHandler;
 import com.syndicate.deployment.annotations.lambda.LambdaUrlConfig;
 import com.syndicate.deployment.annotations.resources.DependsOn;
 import com.syndicate.deployment.model.ResourceType;
 import com.syndicate.deployment.model.RetentionSetting;
 import com.syndicate.deployment.model.lambda.url.AuthType;
-import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 
 import java.time.Instant;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -35,41 +32,54 @@ import java.util.UUID;
 		resourceType = ResourceType.DYNAMODB_TABLE)
 public class ApiHandler implements RequestHandler<Map<String, Object>, Map<String, Object>> {
 
-	private static final AmazonDynamoDB dynamoDB = AmazonDynamoDBClientBuilder.standard().build();
 	private static final String TABLE_NAME = "Events";
-	private static final ObjectMapper objectMapper = new ObjectMapper();
+	private final DynamoDB dynamoDB;
+
+	public ApiHandler() {
+		AmazonDynamoDB client = AmazonDynamoDBClientBuilder.defaultClient();
+		this.dynamoDB = new DynamoDB(client);
+	}
 
 	@Override
-	public Map<String, Object> handleRequest(Map<String, Object> event, Context context) {
+	public Map<String, Object> handleRequest(Map<String, Object> input, Context context) {
+		Map<String, Object> response = new HashMap<>();
 		try {
-			int principalId = Integer.parseInt(event.get("principalId").toString());
-			Map<String, String> content = (Map<String, String>) event.get("content");
-			Map<String, AttributeValue> contentAtt = (Map<String, AttributeValue>) event.get("content");
+			// Generate a UUID for the event
+			String id = UUID.randomUUID().toString();
 
-			String eventId = UUID.randomUUID().toString();
-			Instant now = Instant.now();
-			String createdAt = DateTimeFormatter.ISO_INSTANT.format(now);
+			// Extract the principalId and content from the input
+			int principalId = (int) input.get("principalId");
+			Map<String, String> content = (Map<String, String>) input.get("content");
 
-			Map<String, AttributeValue> item = new HashMap<>();
-			item.put("id", new AttributeValue().withS(eventId));
-			item.put("principalId", new AttributeValue().withN(Integer.toString(principalId)));
-			item.put("createdAt", new AttributeValue().withS(createdAt));
-			item.put("body", new AttributeValue().withM(contentAtt));
+			// Create the event item to be saved in DynamoDB
+			String createdAt = Instant.now().toString();
+			Item item = new Item()
+					.withPrimaryKey("id", id)
+					.withNumber("principalId", principalId)
+					.withString("createdAt", createdAt)
+					.withMap("body", content);
 
-			PutItemRequest putItemRequest = new PutItemRequest()
-					.withTableName(TABLE_NAME)
-					.withItem(item);
+			// Save the event to the DynamoDB table
+			Table table = dynamoDB.getTable(TABLE_NAME);
+			table.putItem(item);
 
-			PutItemResult putItemResult = dynamoDB.putItem(putItemRequest);
+			// Create the event map for the response
+			Map<String, Object> event = new HashMap<>();
+			event.put("id", id);
+			event.put("principalId", principalId);
+			event.put("createdAt", createdAt);
+			event.put("body", content);
 
-			Map<String, Object> response = new HashMap<>();
+			// Create the response object
 			response.put("statusCode", 201);
-			response.put("event", item);
-			return response;
-		} catch (DynamoDbException e) {
-			// Handle exceptions
+			response.put("event", event);
+
+		} catch (Exception e) {
 			e.printStackTrace();
-			return Map.of("statusCode", 500, "error", e.getMessage());
+			response.put("statusCode", 500);
+			response.put("error", "Internal Server Error");
 		}
+
+		return response;
 	}
 }
