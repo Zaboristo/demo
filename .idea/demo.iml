@@ -24,5 +24,6 @@
     <orderEntry type="library" name="Maven: software.amazon.awssdk:sdk-core:2.26.30" level="project" />
     <orderEntry type="library" name="Maven: software.amazon.awssdk:utils:2.26.30" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.16.1" level="project" />
+    <orderEntry type="library" name="Maven: com.amazonaws:aws-java-sdk-core:1.12.767" level="project" />
   </component>
 </module>
