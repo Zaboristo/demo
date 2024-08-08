@@ -44,6 +44,8 @@ public class ApiHandler implements RequestHandler<Map<String, Object>, Map<Strin
 	public Map<String, Object> handleRequest(Map<String, Object> input, Context context) {
 		Map<String, Object> response = new HashMap<>();
 		try {
+
+			input = (Map<String, Object>)input.get("body");
 			// Generate a UUID for the event
 			String id = UUID.randomUUID().toString();
 
