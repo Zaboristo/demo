@@ -44,7 +44,7 @@ public class UuidGenerator implements RequestHandler<ScheduledEvent, String> {
 		// Generate 10 UUIDs
 		List<String> uuids = new ArrayList<>();
 		for (int i = 0; i < 10; i++) {
-			uuids.add("'" + UUID.randomUUID().toString() + "'");
+			uuids.add(UUID.randomUUID().toString());
 		}
 
 		// Get current time in ISO 8601 format
@@ -65,10 +65,8 @@ public class UuidGenerator implements RequestHandler<ScheduledEvent, String> {
 
 		Content content = new Content(uuids);
 		Gson gson = new Gson();
-		gson.toJson(content);
-
 		try {
-			s3.putObject(putObjectRequest, RequestBody.fromString(gson.toJson(content)));
+			s3.putObject(putObjectRequest, RequestBody.fromString(gson.toJson(content), StandardCharsets.UTF_16));
 		} catch (S3Exception e) {
 			context.getLogger().log("Error occurred: " + e.getMessage());
 			return "500 Internal Server Error";
