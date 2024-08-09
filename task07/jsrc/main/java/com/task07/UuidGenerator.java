@@ -3,6 +3,7 @@ package com.task07;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.ScheduledEvent;
+import com.google.gson.Gson;
 import com.syndicate.deployment.annotations.environment.EnvironmentVariable;
 import com.syndicate.deployment.annotations.environment.EnvironmentVariables;
 import com.syndicate.deployment.annotations.events.RuleEventSource;
@@ -62,8 +63,12 @@ public class UuidGenerator implements RequestHandler<ScheduledEvent, String> {
 				.key(currentTime)
 				.build();
 
+		Content content = new Content(uuids);
+		Gson gson = new Gson();
+		gson.toJson(content);
+
 		try {
-			s3.putObject(putObjectRequest, RequestBody.fromString(jsonContent, StandardCharsets.UTF_8));
+			s3.putObject(putObjectRequest, RequestBody.fromString(gson.toJson(content)));
 		} catch (S3Exception e) {
 			context.getLogger().log("Error occurred: " + e.getMessage());
 			return "500 Internal Server Error";
