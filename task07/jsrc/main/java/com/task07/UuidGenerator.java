@@ -42,9 +42,9 @@ public class UuidGenerator implements RequestHandler<ScheduledEvent, String> {
 	@Override
 	public String handleRequest(ScheduledEvent event, Context context) {
 		// Generate 10 UUIDs
-		List<String> uuids = new ArrayList<>();
+		List<UUID> uuids = new ArrayList<>();
 		for (int i = 0; i < 10; i++) {
-			uuids.add(UUID.randomUUID().toString());
+			uuids.add(UUID.randomUUID());
 		}
 
 		// Get current time in ISO 8601 format

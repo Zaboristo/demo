@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.UUID;
 
 public class Content {
-    public List<String> ids;
+    public List<UUID> ids;
 
-    public Content(List<String> ids) {
+    public Content(List<UUID> ids) {
         this.ids = ids;
     }
 }
