@@ -42,14 +42,14 @@ public class UuidGenerator implements RequestHandler<ScheduledEvent, String> {
 		// Generate 10 UUIDs
 		List<String> uuids = new ArrayList<>();
 		for (int i = 0; i < 10; i++) {
-			uuids.add(UUID.randomUUID().toString());
+			uuids.add("'" + UUID.randomUUID().toString() + "'");
 		}
 
 		// Get current time in ISO 8601 format
 		String currentTime = Instant.now().toString();
 
 		// Prepare the JSON content
-		String jsonContent = String.format("{ \"ids\": %s }", uuids.toString());
+		String jsonContent = String.format("{'ids': %s }", uuids.toString());
 
 		// Retrieve the bucket name from environment variables
 		String bucketName = System.getenv("target_bucket");
