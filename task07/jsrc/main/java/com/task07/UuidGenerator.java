@@ -66,7 +66,7 @@ public class UuidGenerator implements RequestHandler<ScheduledEvent, String> {
 		Content content = new Content(uuids);
 		Gson gson = new Gson();
 		try {
-			s3.putObject(putObjectRequest, RequestBody.fromString(gson.toJson(content), StandardCharsets.UTF_16));
+			s3.putObject(putObjectRequest, RequestBody.fromString(gson.toJson(content)));
 		} catch (S3Exception e) {
 			context.getLogger().log("Error occurred: " + e.getMessage());
 			return "500 Internal Server Error";
