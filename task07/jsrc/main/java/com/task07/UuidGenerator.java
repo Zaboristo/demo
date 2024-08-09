@@ -17,6 +17,7 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.*;
@@ -62,7 +63,7 @@ public class UuidGenerator implements RequestHandler<ScheduledEvent, String> {
 				.build();
 
 		try {
-			s3.putObject(putObjectRequest, RequestBody.fromString(jsonContent));
+			s3.putObject(putObjectRequest, RequestBody.fromString(jsonContent, StandardCharsets.UTF_8));
 		} catch (S3Exception e) {
 			context.getLogger().log("Error occurred: " + e.getMessage());
 			return "500 Internal Server Error";
