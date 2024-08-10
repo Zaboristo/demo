@@ -22,7 +22,6 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <mainClass>com.meteo.OpenMeteoClient</mainClass>
-
                         </manifest>
                     </archive>
                 </configuration>
