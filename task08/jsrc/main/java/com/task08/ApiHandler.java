@@ -18,7 +18,7 @@ import com.meteo.OpenMeteoClient;
     lambdaName = "api_handler",
 	roleName = "api_handler-role",
 	isPublishVersion = false,
-	layers = {"sdk-layer"},
+	layers = {"sdk-layer"}
 )
 @LambdaUrlConfig(
 		authType = AuthType.NONE
