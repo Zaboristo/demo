@@ -27,8 +27,9 @@ import java.io.IOException;
 @LambdaLayer(layerName = "sdk-layer",
 		libraries = "lib/weather-sdk-1.0.jar",
 		runtime = DeploymentRuntime.JAVA11,
-		architectures = {Architecture.ARM64, Architecture.X86_64},
-		artifactExtension = ArtifactExtension.ZIP)
+		architectures = {Architecture.ARM64},
+		artifactExtension = ArtifactExtension.ZIP
+)
 public class ApiHandler implements RequestHandler<Object, String> {
 
 	public static void main(String[] args) throws IOException {
