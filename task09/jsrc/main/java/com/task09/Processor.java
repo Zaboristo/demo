@@ -52,7 +52,7 @@ private final Table weatherTable = dynamoDB.getTable("cmtr-b301d41c-" + System.g
 
 @Override
 		public String handleRequest(Map<String, String> event, Context context) {
-			String weatherApiUrl = "https://api.open-meteo.com/v1/forecast?...";
+			String weatherApiUrl = "https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m";
 			String forecast = getWeatherForecast(weatherApiUrl);
 
 			PutItemRequest request = new PutItemRequest()
