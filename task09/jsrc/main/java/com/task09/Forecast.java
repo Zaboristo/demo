@@ -1,5 +1,8 @@
 package com.task09;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties
 public class Forecast {
     private Number latitude;
 

@@ -1,7 +1,9 @@
 package com.task09;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.List;
+@JsonIgnoreProperties
 public class Hourly {
     private List<String> time;
 
