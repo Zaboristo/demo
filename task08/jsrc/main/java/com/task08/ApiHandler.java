@@ -27,7 +27,7 @@ import com.meteo.OpenMeteoClient;
 		libraries = "lib/weather-sdk-1.0.jar",
 		runtime = DeploymentRuntime.JAVA11,
 		architectures = {Architecture.ARM64},
-		artifactExtension = ArtifactExtension.ZIP)
+		artifactExtension = ArtifactExtension.JAR)
 public class ApiHandler implements RequestHandler<Object, String> {
 
 	@Override
