@@ -11,6 +11,8 @@
       <sourceFolder url="file://$MODULE_DIR$/task05/jsrc/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/task06/jsrc/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/task07/jsrc/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/open_meteo/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/task08/jsrc/main/java" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -6,10 +6,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="weather-sdk" />
         <module name="task07" />
+        <module name="task08" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="open_meteo" target="1.5" />
       <module name="task02" target="11" />
       <module name="task05" target="11" />
       <module name="task06" target="11" />
