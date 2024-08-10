@@ -18,7 +18,6 @@
     "env_variables" : { },
     "publish_version" : false,
     "layers" : [ "sdk-layer" ],
-    "logs_expiration" : "${logs_expiration}",
     "snap_start" : "None",
     "url_config" : {
       "auth_type" : "NONE",
@@ -29,7 +28,8 @@
     "name" : "sdk-layer",
     "runtimes" : [ "java17" ],
     "resource_type" : "lambda_layer",
-    "deployment_package" : "sdk-layer-assembly.jar",
-    "libraries" : [ "lib/weather-sdk-1.0.jar" ]
+    "deployment_package" : "sdk-layer-assembly.zip",
+    "libraries" : [ "lib/weather-sdk-1.0.jar" ],
+    "architectures" : [ "arm64" ]
   }
 }
