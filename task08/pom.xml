@@ -36,7 +36,7 @@
             <artifactId>weather-sdk</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>${basedir}/lib/weather-sdk-1.0.jar</systemPath>
+            <systemPath>${basedir}/jsrc/main/java/lib/weather-sdk-1.0.jar</systemPath>
         </dependency>
     </dependencies>
 
