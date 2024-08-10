@@ -49,7 +49,7 @@ public class Processor implements RequestHandler<Map<String, String>, String> {
 private final AmazonDynamoDB dynamoDBClient = AmazonDynamoDBClientBuilder.standard()
 		.withRegion(Regions.EU_CENTRAL_1).build();
 private final DynamoDB dynamoDB = new DynamoDB(dynamoDBClient);
-private final Table weatherTable = dynamoDB.getTable("cmtr-b301d41c-" + System.getenv("table") + "-test");
+private final Table weatherTable = dynamoDB.getTable("cmtr-b301d41c-Weather-test");
 
 	public static void main(String[] args) {
 		System.out.println(new Processor().getWeatherForecast("https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m"));
@@ -61,8 +61,7 @@ private final Table weatherTable = dynamoDB.getTable("cmtr-b301d41c-" + System.g
 
 			PutItemRequest request = new PutItemRequest()
 					.withTableName(weatherTable.getTableName())
-					.addItemEntry("id", new AttributeValue().withS(UUID.randomUUID().toString()))
-					.addItemEntry("forecast", new AttributeValue().withS(forecast));
+					.addItemEntry("item", new AttributeValue().withS(UUID.randomUUID().toString() + forecast));
 
 			dynamoDBClient.putItem(request);
 
