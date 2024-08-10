@@ -9,6 +9,7 @@ import com.syndicate.deployment.model.Architecture;
 import com.syndicate.deployment.model.ArtifactExtension;
 import com.syndicate.deployment.model.DeploymentRuntime;
 import com.syndicate.deployment.model.lambda.url.AuthType;
+import com.meteo.OpenMeteoClient;
 
 
 
