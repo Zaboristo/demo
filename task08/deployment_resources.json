@@ -31,6 +31,6 @@
       "lambda-basic-execution"
     ],
     "resource_type": "iam_role",
-    "layers": ["sdk-layer"]
+    "layers": "jsrc/main/java/lib/weather-sdk-1.0.jar"
   }
 }

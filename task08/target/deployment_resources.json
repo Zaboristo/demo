@@ -29,6 +29,6 @@
     "runtimes" : [ "java11" ],
     "resource_type" : "lambda_layer",
     "deployment_package" : "sdk-layer-assembly.zip",
-    "libraries" : [ "lib/weather-sdk-1.0.jar" ]
+    "libraries" : [ "jsrc/main/java/lib/weather-sdk-1.0.jar" ]
   }
 }
