@@ -33,8 +33,7 @@ import java.util.UUID;
 @LambdaHandler(
     lambdaName = "processor",
 	roleName = "processor-role",
-	isPublishVersion = true,
-	aliasName = "${lambdas_alias_name}",
+	isPublishVersion = false,
 	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED,
 		tracingMode = TracingMode.Active
 )
@@ -49,7 +48,7 @@ public class Processor implements RequestHandler<Map<String, String>, String> {
 private final AmazonDynamoDB dynamoDBClient = AmazonDynamoDBClientBuilder.standard()
 		.withRegion(System.getenv("region")).build();
 private final DynamoDB dynamoDB = new DynamoDB(dynamoDBClient);
-private final Table weatherTable = dynamoDB.getTable(System.getenv("target_table"));
+private final Table weatherTable = dynamoDB.getTable(System.getenv("table"));
 
 @Override
 		public String handleRequest(Map<String, String> event, Context context) {

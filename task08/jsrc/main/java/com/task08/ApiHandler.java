@@ -25,25 +25,22 @@ import com.meteo.OpenMeteoClient;
 )
 @LambdaLayer(layerName = "sdk-layer",
 		libraries = "lib/weather-sdk-1.0.jar",
-		runtime = DeploymentRuntime.JAVA17,
-		architectures = {Architecture.ARM64},
+		runtime = DeploymentRuntime.JAVA11,
 		artifactExtension = ArtifactExtension.ZIP)
-public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class ApiHandler implements RequestHandler<Object, String> {
 
 	@Override
-	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request, Context context) {
+	public String  handleRequest(Object request, Context context) {
 		OpenMeteoClient client = new OpenMeteoClient();
 		APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
 
 		try {
 			String weatherData = client.getWeatherForecast();
-			response.setStatusCode(200);
-			response.setBody(weatherData);
+			return weatherData;
 		} catch (Exception e) {
-			response.setStatusCode(500);
-			response.setBody("Error fetching weather data: " + e.getMessage());
+			return "Error";
 		}
 
-		return response;
+
 	}
 }
