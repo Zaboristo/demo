@@ -26,7 +26,7 @@
   },
   "sdk-layer" : {
     "name" : "sdk-layer",
-    "runtimes" : [ "java17" ],
+    "runtimes" : [ "java11" ],
     "resource_type" : "lambda_layer",
     "deployment_package" : "sdk-layer-assembly.zip",
     "libraries" : [ "lib/weather-sdk-1.0.jar" ],
