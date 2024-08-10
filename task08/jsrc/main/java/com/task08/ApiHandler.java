@@ -7,6 +7,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.syndicate.deployment.annotations.lambda.LambdaHandler;
 import com.syndicate.deployment.annotations.lambda.LambdaLayer;
 import com.syndicate.deployment.annotations.lambda.LambdaUrlConfig;
+import com.syndicate.deployment.model.Architecture;
 import com.syndicate.deployment.model.ArtifactExtension;
 import com.syndicate.deployment.model.DeploymentRuntime;
 import com.syndicate.deployment.model.RetentionSetting;
@@ -18,7 +19,6 @@ import com.meteo.OpenMeteoClient;
 	roleName = "api_handler-role",
 	isPublishVersion = false,
 	layers = {"sdk-layer"},
-	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
 @LambdaUrlConfig(
 		authType = AuthType.NONE
@@ -26,7 +26,8 @@ import com.meteo.OpenMeteoClient;
 @LambdaLayer(layerName = "sdk-layer",
 		libraries = "lib/weather-sdk-1.0.jar",
 		runtime = DeploymentRuntime.JAVA17,
-		artifactExtension = ArtifactExtension.JAR)
+		architectures = {Architecture.ARM64},
+		artifactExtension = ArtifactExtension.ZIP)
 public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
 	@Override

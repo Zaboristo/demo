@@ -7,8 +7,9 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="task01" />
-        <module name="weather-sdk" />
+        <module name="task09" />
         <module name="task08" />
+        <module name="weather-sdk" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
