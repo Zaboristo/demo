@@ -10,6 +10,7 @@ import com.syndicate.deployment.model.ArtifactExtension;
 import com.syndicate.deployment.model.DeploymentRuntime;
 import com.syndicate.deployment.model.lambda.url.AuthType;
 import com.syndicate.deployment.model.RetentionSetting;
+import com.meteo.OpenMeteoClient;
 
 @LambdaHandler(
     lambdaName = "api_handler",
@@ -32,7 +33,7 @@ public class ApiHandler implements RequestHandler<Object, String> {
 		OpenMeteoClient client = new OpenMeteoClient();
 
 		try {
-			String weatherData = client.getWeatherForecast();
+			String weatherData = client.getWeather();
 			return weatherData;
 		} catch (Exception e) {
 			return "Error";
