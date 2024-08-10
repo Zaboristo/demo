@@ -33,7 +33,7 @@ public class ApiHandler implements RequestHandler<Object, String> {
 		OpenMeteoClient client = new OpenMeteoClient();
 
 		try {
-			String weatherData = client.getWeather();
+			String weatherData = client.getWeatherForecast();
 			return weatherData;
 		} catch (Exception e) {
 			return "Error";
