@@ -22,7 +22,7 @@ import com.meteo.OpenMeteoClient;
 		authType = AuthType.NONE
 )
 @LambdaLayer(layerName = "sdk-layer",
-		libraries = "lib/weather-sdk-1.0.jar",
+		libraries = "layer/java/lib/weather-sdk-1.0.jar",
 		runtime = DeploymentRuntime.JAVA11,
 		architectures = {Architecture.ARM64},
 		artifactExtension = ArtifactExtension.JAR)
