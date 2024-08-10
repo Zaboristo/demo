@@ -13,11 +13,6 @@ import com.syndicate.deployment.model.RetentionSetting;
 import com.syndicate.deployment.model.lambda.url.AuthType;
 import com.meteo.OpenMeteoClient;
 
-
-
-import java.util.HashMap;
-import java.util.Map;
-
 @LambdaHandler(
     lambdaName = "api_handler",
 	roleName = "api_handler-role",
@@ -30,7 +25,7 @@ import java.util.Map;
 )
 @LambdaLayer(layerName = "sdk-layer",
 		libraries = "lib/weather-sdk-1.0.jar",
-		runtime = DeploymentRuntime.JAVA11,
+		runtime = DeploymentRuntime.JAVA17,
 		artifactExtension = ArtifactExtension.JAR)
 public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
