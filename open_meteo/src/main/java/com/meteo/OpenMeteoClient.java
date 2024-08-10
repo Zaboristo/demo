@@ -1,55 +1,67 @@
 package com.meteo;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Scanner;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class OpenMeteoClient {
 
-    private static final String BASE_URL = "https://api.open-meteo.com/v1/forecast";
-    private static final String LATITUDE = "52.52";
-    private static final String LONGITUDE = "13.41";
-    private static final String PARAMETERS = "current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m";
+    private static final String API_URL = "https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m";
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public String getWeatherForecast() {
-        try {
-            // Build the complete URL for the API request
-            String urlString = BASE_URL + "?latitude=" + LATITUDE + "&longitude=" + LONGITUDE + "&" + PARAMETERS;
-            URL url = new URL(urlString);
+    public String getWeatherForecast() throws IOException {
+        // Create a URL object with the API URL
+        URL url = new URL(API_URL);
 
-            // Open a connection to the URL
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Accept", "application/json");
+        // Open a connection to the URL
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
 
-            // Check if the request was successful
-            int responseCode = connection.getResponseCode();
-            if (responseCode != HttpURLConnection.HTTP_OK) {
-                throw new RuntimeException("Failed : HTTP error code : " + responseCode);
-            }
-
-            // Read the response
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder response = new StringBuilder();
-            String inputLine;
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
-            in.close();
-
-            // Return the response as a String
-            return response.toString();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+        // Get the response from the API
+        Scanner scanner = new Scanner(connection.getInputStream());
+        StringBuilder response = new StringBuilder();
+        while (scanner.hasNext()) {
+            response.append(scanner.nextLine());
         }
+        scanner.close();
+
+        // Parse the JSON response
+        JsonNode jsonNode = objectMapper.readTree(response.toString());
+
+        // Extract the `current_units` and `current` fields
+        JsonNode currentUnits = jsonNode.get("current_units");
+        JsonNode current = jsonNode.get("current");
+
+        // Remove `current_units` and `current` from the main JSON
+        ((ObjectNode) jsonNode).remove("current_units");
+        ((ObjectNode) jsonNode).remove("current");
+
+        // Create a new JSON object in the desired order
+        Map<String, JsonNode> orderedMap = new LinkedHashMap<>();
+        jsonNode.fields().forEachRemaining(entry -> orderedMap.put(entry.getKey(), entry.getValue()));
+        orderedMap.put("current_units", currentUnits);
+        orderedMap.put("current", current);
+
+        // Convert the ordered map back to a JSON string
+        ObjectNode reorderedNode = objectMapper.createObjectNode();
+        orderedMap.forEach(reorderedNode::set);
+
+        return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(reorderedNode);
     }
 
     public static void main(String[] args) {
-        OpenMeteoClient api = new OpenMeteoClient();
-        String weatherForecast = api.getWeatherForecast();
-        System.out.println(weatherForecast);
+        OpenMeteoClient client = new OpenMeteoClient();
+        try {
+            String weatherForecast = client.getWeatherForecast();
+            System.out.println(weatherForecast);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
