@@ -54,7 +54,7 @@ public class Processor implements RequestHandler<APIGatewayProxyRequestEvent, AP
 
 	private final AmazonDynamoDB amazonDynamoDBClient = AmazonDynamoDBClientBuilder.defaultClient();
 	private final DynamoDB dynamoDB = new DynamoDB(amazonDynamoDBClient);
-	private final String tableName = System.getenv("target_table");
+	private final String tableName = "cmtr-b301d41c-Weather-test";
 
 	@Override
 
