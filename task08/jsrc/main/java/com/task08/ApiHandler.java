@@ -39,6 +39,5 @@ public class ApiHandler implements RequestHandler<Object, String> {
 			return "Error";
 		}
 
-
 	}
 }

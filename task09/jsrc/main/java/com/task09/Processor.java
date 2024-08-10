@@ -48,7 +48,7 @@ public class Processor implements RequestHandler<Map<String, String>, String> {
 private final AmazonDynamoDB dynamoDBClient = AmazonDynamoDBClientBuilder.standard()
 		.withRegion(System.getenv("region")).build();
 private final DynamoDB dynamoDB = new DynamoDB(dynamoDBClient);
-private final Table weatherTable = dynamoDB.getTable(System.getenv("table"));
+private final Table weatherTable = dynamoDB.getTable("cmtr-b301d41c-" + System.getenv("table") + "-test");
 
 @Override
 		public String handleRequest(Map<String, String> event, Context context) {
