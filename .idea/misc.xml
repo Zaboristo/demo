@@ -5,8 +5,8 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/task06/pom.xml" />
-        <option value="$PROJECT_DIR$/task07/pom.xml" />
         <option value="$PROJECT_DIR$/task08/pom.xml" />
+        <option value="$PROJECT_DIR$/task01/pom.xml" />
         <option value="$PROJECT_DIR$/open_meteo/pom.xml" />
       </list>
     </option>

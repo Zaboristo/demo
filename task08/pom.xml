@@ -32,6 +32,11 @@
             <version>${syndicate.java.plugin.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-lambda-java-events</artifactId>
+            <version>3.11.4</version>
+        </dependency>
+        <dependency>
             <groupId>com.meteo</groupId>
             <artifactId>weather-sdk</artifactId>
             <version>1.0</version>
