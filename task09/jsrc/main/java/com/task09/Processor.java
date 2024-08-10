@@ -1,5 +1,6 @@
 package com.task09;
 
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -46,10 +47,13 @@ import java.util.UUID;
 @DependsOn(name = "Weather", resourceType = ResourceType.DYNAMODB_TABLE)
 public class Processor implements RequestHandler<Map<String, String>, String> {
 private final AmazonDynamoDB dynamoDBClient = AmazonDynamoDBClientBuilder.standard()
-		.withRegion(System.getenv("region")).build();
+		.withRegion(Regions.EU_CENTRAL_1).build();
 private final DynamoDB dynamoDB = new DynamoDB(dynamoDBClient);
 private final Table weatherTable = dynamoDB.getTable("cmtr-b301d41c-" + System.getenv("table") + "-test");
 
+	public static void main(String[] args) {
+		System.out.println(new Processor().getWeatherForecast("https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m"));
+	}
 @Override
 		public String handleRequest(Map<String, String> event, Context context) {
 			String weatherApiUrl = "https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m";
@@ -70,6 +74,7 @@ private final Table weatherTable = dynamoDB.getTable("cmtr-b301d41c-" + System.g
 		HttpRequest request = HttpRequest.newBuilder()
 				.uri(URI.create(url))
 				.header("Accept", "application/json")
+				.GET()
 				.build();
 
 		try {

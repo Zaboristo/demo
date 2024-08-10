@@ -12,6 +12,8 @@ import com.syndicate.deployment.model.lambda.url.AuthType;
 import com.syndicate.deployment.model.RetentionSetting;
 import com.meteo.OpenMeteoClient;
 
+import java.io.IOException;
+
 @LambdaHandler(
     lambdaName = "api_handler",
 	roleName = "api_handler-role",
@@ -28,6 +30,9 @@ import com.meteo.OpenMeteoClient;
 		artifactExtension = ArtifactExtension.ZIP)
 public class ApiHandler implements RequestHandler<Object, String> {
 
+	public static void main(String[] args) throws IOException {
+		System.out.println(new OpenMeteoClient().getWeatherForecast());
+	}
 	@Override
 	public String  handleRequest(Object request, Context context) {
 		OpenMeteoClient client = new OpenMeteoClient();

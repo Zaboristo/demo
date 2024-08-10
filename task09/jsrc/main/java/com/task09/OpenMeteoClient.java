@@ -1,4 +1,4 @@
-package com.meteo;
+package com.task09;
 
 import java.io.IOException;
 import java.io.InputStream;
