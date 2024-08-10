@@ -10,7 +10,7 @@ import com.syndicate.deployment.model.ArtifactExtension;
 import com.syndicate.deployment.model.DeploymentRuntime;
 import com.syndicate.deployment.model.lambda.url.AuthType;
 import com.syndicate.deployment.model.RetentionSetting;
-import com.meteo.OpenMeteoClient;
+import com.task08.OpenMeteoClient;
 
 import java.io.IOException;
 
