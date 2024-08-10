@@ -28,8 +28,7 @@
     "name" : "sdk-layer",
     "runtimes" : [ "java11" ],
     "resource_type" : "lambda_layer",
-    "deployment_package" : "sdk-layer-assembly.jar",
-    "libraries" : [ "lib/weather-sdk-1.0.jar" ],
-    "architectures" : [ "arm64" ]
+    "deployment_package" : "sdk-layer-assembly.zip",
+    "libraries" : [ "lib/weather-sdk-1.0.jar" ]
   }
 }

@@ -9,8 +9,8 @@ import com.syndicate.deployment.model.Architecture;
 import com.syndicate.deployment.model.ArtifactExtension;
 import com.syndicate.deployment.model.DeploymentRuntime;
 import com.syndicate.deployment.model.lambda.url.AuthType;
-import com.syndicate.deployment.model.RetentionSetting;
-import com.task08.OpenMeteoClient;
+
+
 
 import java.io.IOException;
 
@@ -26,22 +26,19 @@ import java.io.IOException;
 
 @LambdaLayer(layerName = "sdk-layer",
 		libraries = "lib/weather-sdk-1.0.jar",
-		runtime = DeploymentRuntime.JAVA11,
-		architectures = {Architecture.ARM64},
-		artifactExtension = ArtifactExtension.JAR
+		runtime = DeploymentRuntime.JAVA11
 )
 public class ApiHandler implements RequestHandler<Object, String> {
 
 	public static void main(String[] args) throws IOException {
-		System.out.println(new OpenMeteoClient().getWeatherForecast());
+		System.out.println(new ApiHandler().handleRequest(null, null));
 	}
 	@Override
 	public String  handleRequest(Object request, Context context) {
 		OpenMeteoClient client = new OpenMeteoClient();
 
 		try {
-			String weatherData = client.getWeatherForecast();
-			return weatherData;
+			return client.getWeatherForecast();
 		} catch (Exception e) {
 			return "Error";
 		}
