@@ -23,6 +23,7 @@ import java.io.IOException;
 @LambdaUrlConfig(
 		authType = AuthType.NONE
 )
+
 @LambdaLayer(layerName = "sdk-layer",
 		libraries = "lib/weather-sdk-1.0.jar",
 		runtime = DeploymentRuntime.JAVA11,
