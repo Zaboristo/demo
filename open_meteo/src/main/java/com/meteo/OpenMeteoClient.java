@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class OpenMeteoClient {
 
     public static void main(String[] args) throws Exception {
+        System.out.println(new OpenMeteoClient().getWeatherForecast());
     }
 
     public OpenMeteoClient() {
