@@ -3,7 +3,7 @@ package com.task09;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.List;
-@JsonIgnoreProperties
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Hourly {
     private List<String> time;
 

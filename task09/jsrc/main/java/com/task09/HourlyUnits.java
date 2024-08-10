@@ -2,7 +2,7 @@ package com.task09;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties
+@JsonIgnoreProperties(ignoreUnknown = true)
 public  class HourlyUnits {
     private String time;
     private String temperature_2m;
