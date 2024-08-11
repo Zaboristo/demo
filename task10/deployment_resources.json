@@ -94,7 +94,7 @@
           "lambda_name": "api_handler",
           "api_key_required": false,
           "method_request_parameters": {
-            "method.request.header.Authorization": true
+
           },
           "integration_request_body_template": {},
           "responses": [],
@@ -108,7 +108,7 @@
           "lambda_name": "api_handler",
           "api_key_required": false,
           "method_request_parameters": {
-            "method.request.header.Authorization": true
+
           },
           "integration_request_body_template": {},
           "responses": [],
@@ -125,7 +125,7 @@
           "lambda_name": "api_handler",
           "api_key_required": false,
           "method_request_parameters": {
-            "method.request.header.Authorization": true
+
           },
           "integration_request_body_template": {},
           "responses": [],
@@ -139,7 +139,7 @@
           "lambda_name": "api_handler",
           "api_key_required": false,
           "method_request_parameters": {
-            "method.request.header.Authorization": true
+
           },
           "integration_request_body_template": {},
           "responses": [],
