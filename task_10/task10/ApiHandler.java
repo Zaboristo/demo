@@ -29,7 +29,9 @@ import static com.task10.LambdaVariables.COGNITO_CLIENT_API;
 	runtime = DeploymentRuntime.JAVA17,
 	isPublishVersion = false,
 	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
-
+)
+@LambdaUrlConfig(
+		authType = AuthType.NONE
 )
 @DependsOn(resourceType = ResourceType.COGNITO_USER_POOL, name = "${pool_name}")
 @DependsOn(resourceType = ResourceType.DYNAMODB_TABLE, name = "Tables")

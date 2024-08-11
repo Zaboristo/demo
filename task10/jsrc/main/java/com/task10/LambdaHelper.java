@@ -150,7 +150,7 @@ public class LambdaHelper {
     }
 
     public static String getAccessToken(Map<String, String> headers, Context context) {
-        String accessToken = headers.get(AUTHORIZATION).split(" ")[1];
+        String accessToken = headers.get(AUTHORIZATION);
         context.getLogger().log("Access token: " + accessToken);
         return accessToken;
     }
