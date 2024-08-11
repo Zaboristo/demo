@@ -17,6 +17,8 @@
   "paths": {
     "/reservations": {
       "get": {
+        "summary": "Get list of reservations",
+        "description": "Returns a list of reservations",
         "responses": {
           "200": {
             "description": "200 response",
@@ -30,7 +32,36 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Empty"
+                  "type": "object",
+                  "properties": {
+                    "reservations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "tableNumber": {
+                            "type": "integer"
+                          },
+                          "clientName": {
+                            "type": "string"
+                          },
+                          "phoneNumber": {
+                            "type": "string"
+                          },
+                          "date": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "slotTimeStart": {
+                            "type": "string"
+                          },
+                          "slotTimeEnd": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -57,6 +88,40 @@
         }
       },
       "post": {
+        "summary": "Add a reservation",
+        "description": "Returns a list of reservations",
+        "requestBody": {
+          "description": "Detatil of the reservation to be created",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tableNumber": {
+                    "type": "integer"
+                  },
+                  "clientName": {
+                    "type": "string"
+                  },
+                  "phoneNumber": {
+                    "type": "string"
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "slotTimeStart": {
+                    "type": "string"
+                  },
+                  "slotTimeEnd": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "200 response",
@@ -147,6 +212,8 @@
     },
     "/tables": {
       "get": {
+        "summary": "List all tables",
+        "description": "Endpoint for listing all tables",
         "responses": {
           "200": {
             "description": "200 response",
@@ -187,6 +254,37 @@
         }
       },
       "post": {
+        "summary": "Create a new table",
+        "description": "Endpoint for creating a new table",
+        "requestBody": {
+          "description": "Details of the table to be created",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "number": {
+                    "type": "integer"
+                  },
+                  "places": {
+                    "type": "integer"
+                  },
+                  "isVip": {
+                    "type": "boolean"
+                  },
+                  "minOrder": {
+                    "type": "integer",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "200 response",
@@ -277,6 +375,27 @@
     },
     "/signin": {
       "post": {
+        "summary": "User signin",
+        "description": "Endpoint for user signin",
+        "requestBody": {
+          "description": "User signin details",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "200 response",
@@ -362,6 +481,8 @@
     },
     "/tables/{tableId}": {
       "get": {
+        "summary": "Get table details",
+        "description": "Endpoint for retrieving details of a specific tables",
         "parameters": [
           {
             "name": "tableId",
@@ -472,56 +593,38 @@
     },
     "/signup": {
       "post": {
-        "responses": {
-          "200": {
-            "description": "200 response",
-            "headers": {
-              "Access-Control-Allow-Origin": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Empty"
+        "summary": "User signup",
+        "description": "Endpoint for user signup",
+        "requestBody": {
+          "description": "User signup details",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
                 }
               }
             }
           }
         },
-        "x-amazon-apigateway-integration": {
-          "httpMethod": "POST",
-          "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:196241772369:function:api_handler/invocations",
-          "responses": {
-            "default": {
-              "statusCode": "200",
-              "responseParameters": {
-                "method.response.header.Access-Control-Allow-Origin": "'*'"
-              }
-            }
-          },
-          "passthroughBehavior": "when_no_match",
-          "type": "aws_proxy"
-        }
-      },
-      "options": {
         "responses": {
           "200": {
             "description": "200 response",
             "headers": {
               "Access-Control-Allow-Origin": {
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "Access-Control-Allow-Methods": {
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "Access-Control-Allow-Headers": {
                 "schema": {
                   "type": "string"
                 }
