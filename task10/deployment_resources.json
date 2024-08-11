@@ -4,13 +4,10 @@
       "Statement": [
         {
           "Action": [
-            "logs:CreateLogGroup",
-            "logs:CreateLogStream",
-            "logs:PutLogEvents",
+            "logs:*",
             "dynamodb:*",
-            "ssm:PutParameter",
-            "ssm:GetParameter",
-            "kms:Decrypt",
+            "ssm:*",
+            "kms:*",
             "cognito-idp:*"
           ],
           "Effect": "Allow",
@@ -150,8 +147,8 @@
   },
   "Reservations": {
     "resource_type": "dynamodb_table",
-    "hash_key_name": "tableNumber",
-    "hash_key_type": "N",
+    "hash_key_name": "id",
+    "hash_key_type": "S",
     "read_capacity": 1,
     "write_capacity": 1,
     "global_indexes": [],
