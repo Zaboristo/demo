@@ -9,11 +9,8 @@ import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.GetUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.NotAuthorizedException;
-
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,9 +25,9 @@ public class ReservationsHandler {
                                                                 CognitoIdentityProviderClient cognitoClient) {
         Map<String, Object> body = eventToBody(event, context);
         try {
-            cognitoClient.getUser(GetUserRequest.builder()
-                    .accessToken(getAccessToken(getHeadersFromEvent(event, context), context))
-                    .build());
+//            cognitoClient.getUser(GetUserRequest.builder()
+//                    .accessToken(getAccessToken(getHeadersFromEvent(event, context), context))
+//                    .build());
 
             Map<String, AttributeValue> item = new HashMap<>();
             String tableNumber = String.valueOf(body.get(RESERVATION_TABLE_NUMBER));
@@ -72,9 +69,9 @@ public class ReservationsHandler {
     public APIGatewayProxyResponseEvent handleGetReservations(APIGatewayProxyRequestEvent event, Context context,
                                                               CognitoIdentityProviderClient cognitoClient) {
         try {
-            cognitoClient.getUser(GetUserRequest.builder()
-                    .accessToken(getAccessToken(getHeadersFromEvent(event, context), context))
-                    .build());
+//            cognitoClient.getUser(GetUserRequest.builder()
+//                    .accessToken(getAccessToken(getHeadersFromEvent(event, context), context))
+//                    .build());
 
             AmazonDynamoDB dynamoDb = AmazonDynamoDBClientBuilder.standard().withRegion(Regions.EU_CENTRAL_1).build();
             ScanRequest scanRequest = new ScanRequest().withTableName(TABLE_RESERVATIONS);

@@ -42,6 +42,7 @@ public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, A
 	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
 
 
+
 		ObjectMapper objectMapper = new ObjectMapper();
 		Map<String, String> request = null;
 		try {
