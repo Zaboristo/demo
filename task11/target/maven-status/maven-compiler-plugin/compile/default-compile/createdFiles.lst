@@ -1,0 +1,12 @@
+com\task11\Util.class
+com\task11\ApiHandler.class
+com\task11\LambdaVariables.class
+com\task11\SignUp.class
+com\task11\ReservationsHandler.class
+com\task11\CognitoHelper.class
+com\task11\SignIn.class
+com\task11\TablesHandler.class
+com\task11\EmailValidator.class
+com\task11\HandlerUtils.class
+com\task11\PasswordValidator.class
+com\task11\LambdaHelper.class
