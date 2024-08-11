@@ -1,6 +1,8 @@
 com\task10\TablesHandler.class
 com\task10\ApiHandler.class
-com\task10\ReservationHandler.class
 com\task10\SignUp.class
+com\task10\LambdaVariables.class
+com\task10\ReservationsHandler.class
+com\task10\LambdaHelper.class
 com\task10\SignIn.class
 com\task10\Util.class

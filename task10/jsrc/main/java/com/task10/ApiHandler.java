@@ -4,10 +4,6 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
-import com.syndicate.deployment.annotations.environment.EnvironmentVariable;
-import com.syndicate.deployment.annotations.environment.EnvironmentVariables;
 import com.syndicate.deployment.annotations.lambda.LambdaHandler;
 import com.syndicate.deployment.annotations.lambda.LambdaUrlConfig;
 import com.syndicate.deployment.annotations.resources.DependsOn;
@@ -16,16 +12,7 @@ import com.syndicate.deployment.model.ResourceType;
 import com.syndicate.deployment.model.RetentionSetting;
 import com.syndicate.deployment.model.lambda.url.AuthType;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.CreateUserPoolClientRequest;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.CreateUserPoolClientResponse;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.ExplicitAuthFlowsType;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUserPoolClientsRequest;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.syndicate.deployment.model.environment.ValueTransformer.USER_POOL_NAME_TO_CLIENT_ID;
-import static com.syndicate.deployment.model.environment.ValueTransformer.USER_POOL_NAME_TO_USER_POOL_ID;
 import static com.task10.LambdaHelper.createUserPoolApiClientIfNotExist;
 import static com.task10.LambdaHelper.getCognitoIdByName;
 import static com.task10.LambdaVariables.COGNITO;
@@ -43,9 +30,6 @@ import static com.task10.LambdaVariables.COGNITO_CLIENT_API;
 @DependsOn(resourceType = ResourceType.DYNAMODB_TABLE, name = "Tables")
 @DependsOn(resourceType = ResourceType.DYNAMODB_TABLE, name = "Reservations")
 
-@LambdaUrlConfig(
-		authType = AuthType.NONE
-)
 public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
 	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
