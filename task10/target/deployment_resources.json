@@ -14,14 +14,14 @@
     "subnet_ids" : [ ],
     "security_group_ids" : [ ],
     "dependencies" : [ {
-      "resource_name" : "${pool_name}",
-      "resource_type" : "cognito_idp"
-    }, {
       "resource_name" : "Tables",
       "resource_type" : "dynamodb_table"
     }, {
       "resource_name" : "Reservations",
       "resource_type" : "dynamodb_table"
+    }, {
+      "resource_name" : "${pool_name}",
+      "resource_type" : "cognito_idp"
     } ],
     "event_sources" : [ ],
     "env_variables" : { },

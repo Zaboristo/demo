@@ -3,7 +3,7 @@ package com.task10;
 public class LambdaVariables {
 
     public static final String PREFIX = "cmtr-b301d41c-";
-    public static final String SUFFIX = "-test";
+    public static final String SUFFIX = "";
 
     public static final String TABLE_TABLES = PREFIX + "Tables" + SUFFIX;
     public static final String TABLE_RESERVATIONS = PREFIX + "Reservations" + SUFFIX;

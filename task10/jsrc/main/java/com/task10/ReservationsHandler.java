@@ -28,9 +28,9 @@ public class ReservationsHandler {
                                                                 CognitoIdentityProviderClient cognitoClient) {
         Map<String, Object> body = eventToBody(event, context);
         try {
-            cognitoClient.getUser(GetUserRequest.builder()
-                    .accessToken(getAccessToken(getHeadersFromEvent(event, context), context))
-                    .build());
+//            cognitoClient.getUser(GetUserRequest.builder()
+//                    .accessToken(getAccessToken(getHeadersFromEvent(event, context), context))
+//                    .build());
 
             Map<String, AttributeValue> item = new HashMap<>();
             String tableNumber = String.valueOf(body.get(RESERVATION_TABLE_NUMBER));
@@ -72,9 +72,9 @@ public class ReservationsHandler {
     public APIGatewayProxyResponseEvent handleGetReservations(APIGatewayProxyRequestEvent event, Context context,
                                                               CognitoIdentityProviderClient cognitoClient) {
         try {
-            cognitoClient.getUser(GetUserRequest.builder()
-                    .accessToken(getAccessToken(getHeadersFromEvent(event, context), context))
-                    .build());
+//            cognitoClient.getUser(GetUserRequest.builder()
+//                    .accessToken(getAccessToken(getHeadersFromEvent(event, context), context))
+//                    .build());
 
             AmazonDynamoDB dynamoDb = AmazonDynamoDBClientBuilder.standard().withRegion(Regions.EU_CENTRAL_1).build();
             ScanRequest scanRequest = new ScanRequest().withTableName(TABLE_RESERVATIONS);

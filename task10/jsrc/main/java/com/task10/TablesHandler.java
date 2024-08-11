@@ -28,9 +28,9 @@ public class TablesHandler {
                                                           CognitoIdentityProviderClient cognitoClient) {
         Map<String, Object> body = eventToBody(event, context);
         try {
-            cognitoClient.getUser(GetUserRequest.builder()
-                    .accessToken(getAccessToken(getHeadersFromEvent(event, context), context))
-                    .build());
+//            cognitoClient.getUser(GetUserRequest.builder()
+//                    .accessToken(getAccessToken(getHeadersFromEvent(event, context), context))
+//                    .build());
 
             Map<String, AttributeValue> item = new HashMap<>();
             String id = String.valueOf(body.get(TABLE_ID));
@@ -62,9 +62,9 @@ public class TablesHandler {
     public APIGatewayProxyResponseEvent handleGetTables(APIGatewayProxyRequestEvent event, Context context,
                                                         CognitoIdentityProviderClient cognitoClient) {
         try {
-            cognitoClient.getUser(GetUserRequest.builder()
-                    .accessToken(getAccessToken(getHeadersFromEvent(event, context), context))
-                    .build());
+//            cognitoClient.getUser(GetUserRequest.builder()
+//                    .accessToken(getAccessToken(getHeadersFromEvent(event, context), context))
+//                    .build());
 
             AmazonDynamoDB dynamoDb = AmazonDynamoDBClientBuilder.standard().withRegion(Regions.EU_CENTRAL_1).build();
             ScanRequest scanRequest = new ScanRequest().withTableName(TABLE_TABLES);
@@ -84,9 +84,9 @@ public class TablesHandler {
     public APIGatewayProxyResponseEvent handleGetSpecificTable(APIGatewayProxyRequestEvent event, Context context,
                                                                CognitoIdentityProviderClient cognitoClient) {
         try {
-            cognitoClient.getUser(GetUserRequest.builder()
-                    .accessToken(getAccessToken(getHeadersFromEvent(event, context), context))
-                    .build());
+//            cognitoClient.getUser(GetUserRequest.builder()
+//                    .accessToken(getAccessToken(getHeadersFromEvent(event, context), context))
+//                    .build());
 
             AmazonDynamoDB dynamoDb = AmazonDynamoDBClientBuilder.standard().withRegion(Regions.EU_CENTRAL_1).build();
             String tableId = event.getPathParameters().get("tableId");
