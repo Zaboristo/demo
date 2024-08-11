@@ -1,5 +1,6 @@
 package com.task10;
 
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
@@ -34,7 +35,7 @@ public class ReservationsHandler {
             Map<String, AttributeValue> item = new HashMap<>();
             String tableNumber = String.valueOf(body.get(RESERVATION_TABLE_NUMBER));
             String reservationId = UUID.randomUUID().toString();
-            AmazonDynamoDB dynamoDb = AmazonDynamoDBClientBuilder.defaultClient();
+            AmazonDynamoDB dynamoDb = AmazonDynamoDBClientBuilder.standard().withRegion(Regions.EU_CENTRAL_1).build();
             if (isTableExist(tableNumber, dynamoDb) && isReservationWithTableDoNotExist(tableNumber, dynamoDb)) {
                 item.put(ID, new AttributeValue().withS(reservationId));
                 item.put(RESERVATION_TABLE_NUMBER, new AttributeValue().withN(tableNumber));
@@ -75,7 +76,7 @@ public class ReservationsHandler {
                     .accessToken(getAccessToken(getHeadersFromEvent(event, context), context))
                     .build());
 
-            AmazonDynamoDB dynamoDb = AmazonDynamoDBClientBuilder.defaultClient();
+            AmazonDynamoDB dynamoDb = AmazonDynamoDBClientBuilder.standard().withRegion(Regions.EU_CENTRAL_1).build();
             ScanRequest scanRequest = new ScanRequest().withTableName(TABLE_RESERVATIONS);
 
             List<Map<String, Object>> reservations = getAllReservations(dynamoDb, scanRequest);

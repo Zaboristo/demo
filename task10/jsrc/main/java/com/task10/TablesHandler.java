@@ -1,5 +1,6 @@
 package com.task10;
 
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
@@ -43,7 +44,7 @@ public class TablesHandler {
             }
 
             PutItemRequest putItemRequest = new PutItemRequest(TABLE_TABLES, item);
-            AmazonDynamoDB dynamoDb = AmazonDynamoDBClientBuilder.defaultClient();
+            AmazonDynamoDB dynamoDb = AmazonDynamoDBClientBuilder.standard().withRegion(Regions.EU_CENTRAL_1).build();
             dynamoDb.putItem(putItemRequest);
 
             Map<String, Object> responseBody = new HashMap<>();
@@ -65,7 +66,7 @@ public class TablesHandler {
                     .accessToken(getAccessToken(getHeadersFromEvent(event, context), context))
                     .build());
 
-            AmazonDynamoDB dynamoDb = AmazonDynamoDBClientBuilder.defaultClient();
+            AmazonDynamoDB dynamoDb = AmazonDynamoDBClientBuilder.standard().withRegion(Regions.EU_CENTRAL_1).build();
             ScanRequest scanRequest = new ScanRequest().withTableName(TABLE_TABLES);
 
             Map<String, Object> responseBody = new HashMap<>();
@@ -87,7 +88,7 @@ public class TablesHandler {
                     .accessToken(getAccessToken(getHeadersFromEvent(event, context), context))
                     .build());
 
-            AmazonDynamoDB dynamoDb = AmazonDynamoDBClientBuilder.defaultClient();
+            AmazonDynamoDB dynamoDb = AmazonDynamoDBClientBuilder.standard().withRegion(Regions.EU_CENTRAL_1).build();
             String tableId = event.getPathParameters().get("tableId");
             context.getLogger().log("Handling the /tables/{tableId} type request: " + tableId);
             ScanRequest scanRequest = new ScanRequest().withTableName(TABLE_TABLES);
