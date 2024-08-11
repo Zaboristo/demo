@@ -47,42 +47,40 @@ public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, A
 			throw new RuntimeException(e);
 		}
 
-		String path = (String) request.get("path");
-		String method = (String) request.get("httpMethod");
+		String path = request.get("path") == null ? event.getPath() : request.get("path");
+		String method = request.get("httpMethod") == null ? event.getHttpMethod() : request.get("httpMethod");
 
-		String urlPath = path;
-		String httpMethod = method;
-		context.getLogger().log("Received request: urlPath: " + urlPath + ", HTTP method: " + httpMethod);
+        context.getLogger().log("Received request: urlPath: " + path + ", HTTP method: " + method);
 
 		CognitoIdentityProviderClient cognitoClient = CognitoIdentityProviderClient.create();
 		String cognitoId = getCognitoIdByName(COGNITO, cognitoClient, context);
 		createUserPoolApiClientIfNotExist(cognitoId, COGNITO_CLIENT_API, cognitoClient, context);
 
-		if ("/signup".equals(urlPath)) {
-			if ("POST".equals(httpMethod)) return new SignUp().handleSignUp(event, context, cognitoClient);
-		} else if ("/signin".equals(urlPath)) {
-			if ("POST".equals(httpMethod)) return new SignIn().handleSignIn(event, context, cognitoClient);
-		} else if ("/tables".equals(urlPath)) {
-			if ("POST".equals(httpMethod)) {
+		if ("/signup".equals(path)) {
+			if ("POST".equals(method)) return new SignUp().handleSignUp(event, context, cognitoClient);
+		} else if ("/signin".equals(path)) {
+			if ("POST".equals(method)) return new SignIn().handleSignIn(event, context, cognitoClient);
+		} else if ("/tables".equals(path)) {
+			if ("POST".equals(method)) {
 				return new TablesHandler().handleCreateTable(event, context, cognitoClient);
-			} else if ("GET".equals(httpMethod)) {
+			} else if ("GET".equals(method)) {
 				return new TablesHandler().handleGetTables(event, context, cognitoClient);
 			}
-		} else if (urlPath.matches("/tables/\\d+")) {
-			if ("GET".equals(httpMethod)) {
+		} else if (path.matches("/tables/\\d+")) {
+			if ("GET".equals(method)) {
 				return new TablesHandler().handleGetSpecificTable(event, context, cognitoClient);
 			}
-		} else if ("/reservations".equals(urlPath)) {
-			if ("POST".equals(httpMethod)) {
+		} else if ("/reservations".equals(path)) {
+			if ("POST".equals(method)) {
 				return new ReservationsHandler().handleCreateReservation(event, context, cognitoClient);
-			} else if ("GET".equals(httpMethod)) {
+			} else if ("GET".equals(method)) {
 				return new ReservationsHandler().handleGetReservations(event, context, cognitoClient);
 			}
 		}
 
-		context.getLogger().log("Handler for urlPath: " + urlPath + ", and HTTP method: " + httpMethod
+		context.getLogger().log("Handler for urlPath: " + path + ", and HTTP method: " + method
 				+ "was not found");
-		throw new RuntimeException("Handler for urlPath: " + urlPath + ", and HTTP method: " + httpMethod
+		throw new RuntimeException("Handler for urlPath: " + path + ", and HTTP method: " + method
 				+ "was not found");
 	}
 
