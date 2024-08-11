@@ -481,6 +481,8 @@
     },
     "/tables/{tableId}": {
       "get": {
+        "summary": "Get table details",
+        "description": "Endpoint for retrieving details of a specific tables",
         "parameters": [
           {
             "name": "tableId",
