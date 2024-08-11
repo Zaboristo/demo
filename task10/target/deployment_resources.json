@@ -14,19 +14,23 @@
     "subnet_ids" : [ ],
     "security_group_ids" : [ ],
     "dependencies" : [ {
+      "resource_name" : "${pool_name}",
+      "resource_type" : "cognito_idp"
+    }, {
       "resource_name" : "Tables",
       "resource_type" : "dynamodb_table"
     }, {
       "resource_name" : "Reservations",
       "resource_type" : "dynamodb_table"
-    }, {
-      "resource_name" : "${pool_name}",
-      "resource_type" : "cognito_idp"
     } ],
     "event_sources" : [ ],
     "env_variables" : { },
     "publish_version" : false,
     "logs_expiration" : "${logs_expiration}",
-    "snap_start" : "None"
+    "snap_start" : "None",
+    "url_config" : {
+      "auth_type" : "NONE",
+      "invoke_mode" : "BUFFERED"
+    }
   }
 }
