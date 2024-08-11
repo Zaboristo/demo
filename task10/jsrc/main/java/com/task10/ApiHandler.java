@@ -4,6 +4,8 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.syndicate.deployment.annotations.lambda.LambdaHandler;
 import com.syndicate.deployment.annotations.lambda.LambdaUrlConfig;
 import com.syndicate.deployment.annotations.resources.DependsOn;
@@ -12,6 +14,9 @@ import com.syndicate.deployment.model.ResourceType;
 import com.syndicate.deployment.model.RetentionSetting;
 import com.syndicate.deployment.model.lambda.url.AuthType;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static com.task10.LambdaHelper.createUserPoolApiClientIfNotExist;
 import static com.task10.LambdaHelper.getCognitoIdByName;
@@ -33,8 +38,20 @@ import static com.task10.LambdaVariables.COGNITO_CLIENT_API;
 public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
 	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
-		String urlPath = event.getPath();
-		String httpMethod = event.getHttpMethod();
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		Map<String, String> request = null;
+		try {
+			request = objectMapper.readValue(objectMapper.writeValueAsString(event), LinkedHashMap.class);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+
+		String path = (String) request.get("path");
+		String method = (String) request.get("httpMethod");
+
+		String urlPath = path;
+		String httpMethod = method;
 		context.getLogger().log("Received request: urlPath: " + urlPath + ", HTTP method: " + httpMethod);
 
 		CognitoIdentityProviderClient cognitoClient = CognitoIdentityProviderClient.create();
