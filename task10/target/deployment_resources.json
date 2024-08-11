@@ -28,17 +28,17 @@
       "COGNITO_NAME" : "${pool_name}",
       "SUFFIX" : "${suffix}",
       "CLIENT_ID" : {
+        "resource_type" : "cognito_idp",
         "resource_name" : "${pool_name}",
-        "parameter" : "client_id",
-        "resource_type" : "cognito_idp"
+        "parameter" : "client_id"
       },
       "PREFIX" : "${prefix}",
       "RESERVATIONS_TABLE" : "${reservations_table}",
       "TABLES_TABLE" : "${tables_table}",
       "COGNITO_ID" : {
+        "resource_type" : "cognito_idp",
         "resource_name" : "${pool_name}",
-        "parameter" : "id",
-        "resource_type" : "cognito_idp"
+        "parameter" : "id"
       },
       "REGION" : "${region}"
     },
