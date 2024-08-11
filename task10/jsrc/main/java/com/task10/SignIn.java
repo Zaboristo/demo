@@ -1,48 +1,48 @@
 package com.task10;
 
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.InitiateAuthRequest;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.InitiateAuthResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.task10.LambdaHelper.*;
+import static com.task10.LambdaVariables.*;
+
 public class SignIn {
-    APIGatewayV2HTTPResponse handleSignin(Map<String, Object> input, CognitoIdentityProviderClient provider) {
-        Map<String, String> requestBody = (Map<String, String>) input.get("body");
+    public APIGatewayProxyResponseEvent handleSignIn(APIGatewayProxyRequestEvent event, Context context,
+                                                     CognitoIdentityProviderClient cognitoClient) {
+        Map<String, Object> body = eventToBody(event, context);
+        String email = (String) body.get(EMAIL_NAME);
+        String password = (String) body.get(PASSWORD_NAME);
 
-
+        String cognitoId = getCognitoIdByName(COGNITO, cognitoClient, context);
+        UserPoolClientDescription appClient = getUserPoolApiDesc(cognitoId, cognitoClient, context);
+        Map<String, String> authParameters = new HashMap<>();
+        authParameters.put("USERNAME", email);
+        authParameters.put("PASSWORD", password);
+        AdminInitiateAuthResponse authResponse;
         try {
-            Map<String, String> authParameters = new HashMap<>();
-            authParameters.put("USERNAME", requestBody.get("email"));
-            authParameters.put("PASSWORD", requestBody.get("password"));
-
-            InitiateAuthRequest authRequest = InitiateAuthRequest.builder()
-                    .authFlow(AuthFlowType.USER_PASSWORD_AUTH)
-                    .clientId(Util.getCognitoID(provider))
+            authResponse = cognitoClient.adminInitiateAuth(AdminInitiateAuthRequest.builder()
+                    .userPoolId(cognitoId)
+                    .clientId(appClient.clientId())
+                    .authFlow(AuthFlowType.ADMIN_NO_SRP_AUTH)
                     .authParameters(authParameters)
-                    .build();
-
-            InitiateAuthResponse authResponse = provider.initiateAuth(authRequest);
-
-            String idToken = authResponse.authenticationResult().idToken();
-
-            Map<String, String> responseBody = new HashMap<>();
-            responseBody.put("accessToken", idToken);
-
-            return APIGatewayV2HTTPResponse.builder()
-                    .withStatusCode(200)
-                    .withBody(responseBody.toString())
-                    .build();
-
-        } catch (Exception e) {
-            return APIGatewayV2HTTPResponse.builder()
-                    .withStatusCode(400)
-                    .withBody("Error during sign-in: " + e.getMessage())
-                    .build();
+                    .build());
+        } catch (UserNotFoundException e) {
+            context.getLogger().log("Failed to sign in" + e.getMessage());
+            return new APIGatewayProxyResponseEvent()
+                    .withBody(e.getMessage())
+                    .withStatusCode(400);
         }
-    }
 
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put(ACCESS_TOKEN, ((AdminInitiateAuthResponse) authResponse).authenticationResult().accessToken());
+
+        return createSuccessResponse(responseBody, context);
+    }
 }

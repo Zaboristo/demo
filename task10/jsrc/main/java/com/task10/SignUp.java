@@ -1,48 +1,55 @@
 package com.task10;
 
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
 
 import java.util.Map;
 
+import static com.task10.LambdaHelper.*;
+import static com.task10.LambdaVariables.*;
+
 public class SignUp {
-    APIGatewayV2HTTPResponse handleSignup(Map<String, Object> input, CognitoIdentityProviderClient provider) {
-        Map<String, String> requestBody = (Map<String, String>) input.get("body");
+    public APIGatewayProxyResponseEvent handleSignUp(APIGatewayProxyRequestEvent event, Context context,
+                                                     CognitoIdentityProviderClient cognitoClient) {
+        Map<String, Object> body = eventToBody(event, context);
+        String firstName = (String) body.get(FIRST_NAME);
+        String lastName = (String) body.get(LAST_NAME);
+        String email = (String) body.get(EMAIL_NAME);
+        String password = (String) body.get(PASSWORD_NAME);
 
-
+        String cognitoId = getCognitoIdByName(COGNITO, cognitoClient, context);
         try {
-            AdminCreateUserResponse result = provider.adminCreateUser(AdminCreateUserRequest.builder()
-                    .userPoolId(Util.getCognitoID(provider))
-                    .username(requestBody.get("email"))
-                    .temporaryPassword(requestBody.get("password"))
+            AdminCreateUserResponse creationResult = cognitoClient.adminCreateUser(AdminCreateUserRequest.builder()
+                    .userPoolId(cognitoId)
+                    .username(email)
+                    .temporaryPassword(password)
                     .messageAction(MessageActionType.SUPPRESS)
                     .userAttributes(
-                            AttributeType.builder().name("email").value(requestBody.get("email")).build(),
-                            AttributeType.builder().name("given_name").value(requestBody.get("firstName")).build(),
-                            AttributeType.builder().name("family_name").value(requestBody.get("lastName")).build(),
+                            AttributeType.builder().name("email").value(email).build(),
+                            AttributeType.builder().name("given_name").value(firstName).build(),
+                            AttributeType.builder().name("family_name").value(lastName).build(),
                             AttributeType.builder().name("email_verified").value("true").build()
                     )
                     .build());
+            context.getLogger().log("Admin user was created successfully: " + creationResult);
 
-            provider.adminSetUserPassword(AdminSetUserPasswordRequest.builder()
-                    .userPoolId(Util.getCognitoID(provider))
-                    .username(requestBody.get("email"))
-                    .password(requestBody.get("password"))
+            cognitoClient.adminSetUserPassword(AdminSetUserPasswordRequest.builder()
+                    .userPoolId(cognitoId)
+                    .username(email)
+                    .password(password)
                     .permanent(true)
                     .build());
-
-            return APIGatewayV2HTTPResponse.builder()
-                    .withStatusCode(200)
-                    .withBody("Sign-up process is successful")
-                    .build();
-
-        } catch (Exception e) {
-            return APIGatewayV2HTTPResponse.builder()
-                    .withStatusCode(400)
-                    .withBody("Error during sign-up: " + e.getMessage())
-                    .build();
+            context.getLogger().log("The new password was  saved successfully");
+        } catch (CognitoIdentityProviderException e) {
+            context.getLogger().log(e.getMessage());
+            return new APIGatewayProxyResponseEvent()
+                    .withBody(e.getMessage())
+                    .withStatusCode(400);
         }
+        return createSuccessResponse(null, context);
     }
 }
-

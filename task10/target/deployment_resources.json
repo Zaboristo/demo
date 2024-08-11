@@ -6,7 +6,7 @@
     "func_name" : "com.task10.ApiHandler",
     "deployment_package" : "task10-1.0.0.jar",
     "resource_type" : "lambda",
-    "runtime" : "java11",
+    "runtime" : "java17",
     "architectures" : [ "x86_64" ],
     "iam_role_name" : "api_handler-role",
     "memory" : 1024,
@@ -14,13 +14,13 @@
     "subnet_ids" : [ ],
     "security_group_ids" : [ ],
     "dependencies" : [ {
-      "resource_name" : "Reservations",
-      "resource_type" : "dynamodb_table"
-    }, {
       "resource_name" : "${pool_name}",
       "resource_type" : "cognito_idp"
     }, {
       "resource_name" : "Tables",
+      "resource_type" : "dynamodb_table"
+    }, {
+      "resource_name" : "Reservations",
       "resource_type" : "dynamodb_table"
     } ],
     "event_sources" : [ ],
@@ -42,8 +42,7 @@
       },
       "REGION" : "${region}"
     },
-    "publish_version" : true,
-    "alias" : "${lambdas_alias_name}",
+    "publish_version" : false,
     "logs_expiration" : "${logs_expiration}",
     "snap_start" : "None",
     "url_config" : {

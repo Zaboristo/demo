@@ -2,6 +2,8 @@ package com.task10;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import com.syndicate.deployment.annotations.environment.EnvironmentVariable;
@@ -24,6 +26,10 @@ import java.util.Map;
 
 import static com.syndicate.deployment.model.environment.ValueTransformer.USER_POOL_NAME_TO_CLIENT_ID;
 import static com.syndicate.deployment.model.environment.ValueTransformer.USER_POOL_NAME_TO_USER_POOL_ID;
+import static com.task10.LambdaHelper.createUserPoolApiClientIfNotExist;
+import static com.task10.LambdaHelper.getCognitoIdByName;
+import static com.task10.LambdaVariables.COGNITO;
+import static com.task10.LambdaVariables.COGNITO_CLIENT_API;
 
 @LambdaHandler(
     lambdaName = "api_handler",
@@ -36,86 +42,47 @@ import static com.syndicate.deployment.model.environment.ValueTransformer.USER_P
 @DependsOn(resourceType = ResourceType.COGNITO_USER_POOL, name = "${pool_name}")
 @DependsOn(resourceType = ResourceType.DYNAMODB_TABLE, name = "Tables")
 @DependsOn(resourceType = ResourceType.DYNAMODB_TABLE, name = "Reservations")
-@EnvironmentVariables(value = {
-		@EnvironmentVariable(key = "REGION", value = "${region}"),
-		@EnvironmentVariable(key = "COGNITO_ID", value = "${pool_name}", valueTransformer = USER_POOL_NAME_TO_USER_POOL_ID),
-		@EnvironmentVariable(key = "CLIENT_ID", value = "${pool_name}", valueTransformer = USER_POOL_NAME_TO_CLIENT_ID),
-		@EnvironmentVariable(key = "COGNITO_NAME", value = "${pool_name}"),
-		@EnvironmentVariable(key = "PREFIX", value = "${prefix}"),
-		@EnvironmentVariable(key = "SUFFIX", value = "${suffix}"),
-		@EnvironmentVariable(key = "TABLES_TABLE", value = "${tables_table}"),
-		@EnvironmentVariable(key = "RESERVATIONS_TABLE", value = "${reservations_table}")
-})
+
 @LambdaUrlConfig(
 		authType = AuthType.NONE
 )
-public class ApiHandler implements RequestHandler<Map<String, Object>, APIGatewayV2HTTPResponse> {
+public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-	static Context context;
-	@Override
-	public APIGatewayV2HTTPResponse handleRequest(Map<String, Object> input, Context context) {
-		this.context = context;
-		String path = (String) input.get("path");
-		String httpMethod = (String) input.get("httpMethod");
-		CognitoIdentityProviderClient provider = CognitoIdentityProviderClient.create();
+	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
+		String urlPath = event.getPath();
+		String httpMethod = event.getHttpMethod();
+		context.getLogger().log("Received request: urlPath: " + urlPath + ", HTTP method: " + httpMethod);
 
-		switch (path) {
-			case "/signup":
-				if ("POST".equals(httpMethod)) {
-					return new SignUp().handleSignup(input, provider);
-				}
-				break;
-			case "/signin":
-				if ("POST".equals(httpMethod)) {
-					return new SignIn().handleSignin(input, provider);
-				}
-				break;
-			case "/tables":
-				if ("GET".equals(httpMethod)) {
-					return new TablesHandler().handleGetTables(input, provider);
-				} else if ("POST".equals(httpMethod)) {
-					return new TablesHandler().handlePostTables(input, provider);
-				}
-				break;
-			case "/reservations":
-				if ("POST".equals(httpMethod)) {
-					return new ReservationHandler().handlePostReservations(input, provider);
-				} else if ("GET".equals(httpMethod)) {
-					return new ReservationHandler().handleGetReservations(input, provider);
-				}
-				break;
-			default:
-				return APIGatewayV2HTTPResponse.builder()
-						.withStatusCode(400)
-						.withBody("Invalid path")
-						.build();
+		CognitoIdentityProviderClient cognitoClient = CognitoIdentityProviderClient.create();
+		String cognitoId = getCognitoIdByName(COGNITO, cognitoClient, context);
+		createUserPoolApiClientIfNotExist(cognitoId, COGNITO_CLIENT_API, cognitoClient, context);
+
+		if ("/signup".equals(urlPath)) {
+			if ("POST".equals(httpMethod)) return new SignUp().handleSignUp(event, context, cognitoClient);
+		} else if ("/signin".equals(urlPath)) {
+			if ("POST".equals(httpMethod)) return new SignIn().handleSignIn(event, context, cognitoClient);
+		} else if ("/tables".equals(urlPath)) {
+			if ("POST".equals(httpMethod)) {
+				return new TablesHandler().handleCreateTable(event, context, cognitoClient);
+			} else if ("GET".equals(httpMethod)) {
+				return new TablesHandler().handleGetTables(event, context, cognitoClient);
+			}
+		} else if (urlPath.matches("/tables/\\d+")) {
+			if ("GET".equals(httpMethod)) {
+				return new TablesHandler().handleGetSpecificTable(event, context, cognitoClient);
+			}
+		} else if ("/reservations".equals(urlPath)) {
+			if ("POST".equals(httpMethod)) {
+				return new ReservationsHandler().handleCreateReservation(event, context, cognitoClient);
+			} else if ("GET".equals(httpMethod)) {
+				return new ReservationsHandler().handleGetReservations(event, context, cognitoClient);
+			}
 		}
-		return APIGatewayV2HTTPResponse.builder()
-				.withStatusCode(400)
-				.withBody("Invalid request")
-				.build();
+
+		context.getLogger().log("Handler for urlPath: " + urlPath + ", and HTTP method: " + httpMethod
+				+ "was not found");
+		throw new RuntimeException("Handler for urlPath: " + urlPath + ", and HTTP method: " + httpMethod
+				+ "was not found");
 	}
 
-	public static void createUserPoolApiClientIfNotExist(String cognitoId, String clientName,
-														 CognitoIdentityProviderClient cognitoClient,
-														 Context context) {
-		boolean noOneApiClient = cognitoClient.listUserPoolClients(ListUserPoolClientsRequest.builder()
-				.userPoolId(cognitoId)
-				.build()).userPoolClients().isEmpty();
-		if (noOneApiClient) {
-			CreateUserPoolClientResponse createUserPoolClientResponse =
-					cognitoClient.createUserPoolClient(CreateUserPoolClientRequest.builder()
-							.userPoolId(cognitoId)
-							.clientName(clientName)
-							.explicitAuthFlows(ExplicitAuthFlowsType.ADMIN_NO_SRP_AUTH)
-							.generateSecret(false)
-							.build());
-			context.getLogger().log("User pool client was created: " + createUserPoolClientResponse);
-		}
-	}
-
-	public static String getAccessToken(Map<String, Object> input) {
-		Map<String, String> headers = (Map<String, String>) input.get("headers");
-		return headers.get("Authorization").split(" ")[1];
-	}
 }
