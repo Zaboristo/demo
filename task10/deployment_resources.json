@@ -8,8 +8,7 @@
             "dynamodb:*",
             "ssm:*",
             "kms:*",
-            "cognito-idp:*",
-            "api_gateway:*"
+            "cognito-idp:*"
           ],
           "Effect": "Allow",
           "Resource": "*"
