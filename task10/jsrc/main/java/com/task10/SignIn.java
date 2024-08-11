@@ -13,6 +13,7 @@ public class SignIn {
     APIGatewayV2HTTPResponse handleSignin(Map<String, Object> input, CognitoIdentityProviderClient provider) {
         Map<String, String> requestBody = (Map<String, String>) input.get("body");
 
+
         try {
             Map<String, String> authParameters = new HashMap<>();
             authParameters.put("USERNAME", requestBody.get("email"));
@@ -20,7 +21,7 @@ public class SignIn {
 
             InitiateAuthRequest authRequest = InitiateAuthRequest.builder()
                     .authFlow(AuthFlowType.USER_PASSWORD_AUTH)
-                    .clientId(System.getenv("COGNITO_ID"))
+                    .clientId(Util.getCognitoID(provider))
                     .authParameters(authParameters)
                     .build();
 

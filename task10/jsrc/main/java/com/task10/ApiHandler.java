@@ -7,10 +7,16 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import com.syndicate.deployment.annotations.environment.EnvironmentVariable;
 import com.syndicate.deployment.annotations.environment.EnvironmentVariables;
 import com.syndicate.deployment.annotations.lambda.LambdaHandler;
+import com.syndicate.deployment.annotations.lambda.LambdaUrlConfig;
 import com.syndicate.deployment.annotations.resources.DependsOn;
 import com.syndicate.deployment.model.ResourceType;
 import com.syndicate.deployment.model.RetentionSetting;
+import com.syndicate.deployment.model.lambda.url.AuthType;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.CreateUserPoolClientRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.CreateUserPoolClientResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ExplicitAuthFlowsType;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUserPoolClientsRequest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,15 +32,21 @@ import static com.syndicate.deployment.model.environment.ValueTransformer.USER_P
 	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
 @DependsOn(resourceType = ResourceType.COGNITO_USER_POOL, name = "${pool_name}")
+@DependsOn(resourceType = ResourceType.DYNAMODB_TABLE, name = "Tables")
+@DependsOn(resourceType = ResourceType.DYNAMODB_TABLE, name = "Reservations")
 @EnvironmentVariables(value = {
 		@EnvironmentVariable(key = "REGION", value = "${region}"),
 		@EnvironmentVariable(key = "COGNITO_ID", value = "${pool_name}", valueTransformer = USER_POOL_NAME_TO_USER_POOL_ID),
 		@EnvironmentVariable(key = "CLIENT_ID", value = "${pool_name}", valueTransformer = USER_POOL_NAME_TO_CLIENT_ID),
+		@EnvironmentVariable(key = "COGNITO_NAME", value = "${pool_name}"),
 		@EnvironmentVariable(key = "PREFIX", value = "${prefix}"),
 		@EnvironmentVariable(key = "SUFFIX", value = "${suffix}"),
 		@EnvironmentVariable(key = "TABLES_TABLE", value = "${tables_table}"),
 		@EnvironmentVariable(key = "RESERVATIONS_TABLE", value = "${reservations_table}")
 })
+@LambdaUrlConfig(
+		authType = AuthType.NONE
+)
 public class ApiHandler implements RequestHandler<Map<String, Object>, APIGatewayV2HTTPResponse> {
 
 	static Context context;
@@ -80,6 +92,24 @@ public class ApiHandler implements RequestHandler<Map<String, Object>, APIGatewa
 				.withStatusCode(400)
 				.withBody("Invalid request")
 				.build();
+	}
+
+	public static void createUserPoolApiClientIfNotExist(String cognitoId, String clientName,
+														 CognitoIdentityProviderClient cognitoClient,
+														 Context context) {
+		boolean noOneApiClient = cognitoClient.listUserPoolClients(ListUserPoolClientsRequest.builder()
+				.userPoolId(cognitoId)
+				.build()).userPoolClients().isEmpty();
+		if (noOneApiClient) {
+			CreateUserPoolClientResponse createUserPoolClientResponse =
+					cognitoClient.createUserPoolClient(CreateUserPoolClientRequest.builder()
+							.userPoolId(cognitoId)
+							.clientName(clientName)
+							.explicitAuthFlows(ExplicitAuthFlowsType.ADMIN_NO_SRP_AUTH)
+							.generateSecret(false)
+							.build());
+			context.getLogger().log("User pool client was created: " + createUserPoolClientResponse);
+		}
 	}
 
 	public static String getAccessToken(Map<String, Object> input) {

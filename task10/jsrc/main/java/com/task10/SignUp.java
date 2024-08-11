@@ -10,9 +10,10 @@ public class SignUp {
     APIGatewayV2HTTPResponse handleSignup(Map<String, Object> input, CognitoIdentityProviderClient provider) {
         Map<String, String> requestBody = (Map<String, String>) input.get("body");
 
+
         try {
             AdminCreateUserResponse result = provider.adminCreateUser(AdminCreateUserRequest.builder()
-                    .userPoolId(System.getenv("COGNITO_ID"))
+                    .userPoolId(Util.getCognitoID(provider))
                     .username(requestBody.get("email"))
                     .temporaryPassword(requestBody.get("password"))
                     .messageAction(MessageActionType.SUPPRESS)
@@ -25,7 +26,7 @@ public class SignUp {
                     .build());
 
             provider.adminSetUserPassword(AdminSetUserPasswordRequest.builder()
-                    .userPoolId(System.getenv("COGNITO_ID"))
+                    .userPoolId(Util.getCognitoID(provider))
                     .username(requestBody.get("email"))
                     .password(requestBody.get("password"))
                     .permanent(true)
